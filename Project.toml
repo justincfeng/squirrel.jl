@@ -1,0 +1,19 @@
+name = "squirrel"
+uuid = "ddc0fec3-b12a-437f-a9ae-fa4d1221206f"
+authors = ["Justin C. Feng <justin.feng@tecnico.ulisboa.pt>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra   = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+OrdinaryDiffEq  = "1dea7af3-3e70-54e6-95c3-0bf5283fa5ed"
+ForwardDiff     = "f6369f11-7733-5829-9624-2563aa707210"
+DiffResults     = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
+
+Statistics      = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Combinatorics   = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+
+LegendrePolynomials       = "3db4a2ba-fc88-11e8-3e01-49c72059a882"
+CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
+
+[compat]
+julia = "1.6"
