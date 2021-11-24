@@ -2,7 +2,7 @@
 #   TOLERANCES
 #-----------------------------------------------------------------------
 
-δtol = 1e-10
+δtol = 1e-8
 tol  = 1e-13
 
 #-----------------------------------------------------------------------
@@ -74,7 +74,7 @@ Vid  = vcat(-V[2:4,1],-V[2:4,2],-V[2:4,3],-V[2:4,4])
 #-----------------------------------------------------------------------
 
 for i=1:4
-    res = squirrel.gejac( Zi[1:4,i] , Zi[5:8,i] , η , δtol )
+    local res = squirrel.gejac( Zi[1:4,i] , Zi[5:8,i] , η , δtol )
     @test res[1][1:4] ≈ Xc atol=tol
     @test res[1][6:8] ≈ -V[2:4,i] atol=tol
     @test res[2][1,:] ≈ -V[2:4,i] atol=tol
@@ -83,32 +83,32 @@ end
 #-----------------------------------------------------------------------
 #   JACOBIAN CALCULATOR TEST
 #-----------------------------------------------------------------------
-res = squirrel.geocJ( Zi , η , δtol )
+global resx = squirrel.geocJ( Zi , η , δtol )
 
-@test res[1][6:8,:]       ≈ -V[2:4,:] atol=tol
+@test resx[1][6:8,:]       ≈ -V[2:4,:] atol=tol
 
 for i=1:4
-    @test res[1][1:4,i]   ≈ Xc atol=tol
+    @test resx[1][1:4,i]   ≈ Xc atol=tol
 end
 
-@test res[2][1,1:3]       ≈ -V[2:4,1] atol=tol
-@test res[2][5,1:3]       ≈ -V[2:4,1] atol=tol
-@test res[2][9,1:3]       ≈ -V[2:4,1] atol=tol
+@test resx[2][1,1:3]       ≈ -V[2:4,1] atol=tol
+@test resx[2][5,1:3]       ≈ -V[2:4,1] atol=tol
+@test resx[2][9,1:3]       ≈ -V[2:4,1] atol=tol
 
-@test res[2][1,4:6]       ≈ V[2:4,2] atol=tol
-@test res[2][5,7:9]       ≈ V[2:4,3] atol=tol
-@test res[2][9,10:12]     ≈ V[2:4,4] atol=tol
+@test resx[2][1,4:6]       ≈ V[2:4,2] atol=tol
+@test resx[2][5,7:9]       ≈ V[2:4,3] atol=tol
+@test resx[2][9,10:12]     ≈ V[2:4,4] atol=tol
 
-@test res[2][5:12,  4:6]  ≈ zeros(8,3)
-@test res[2][1:4,   7:9]  ≈ zeros(4,3)
-@test res[2][9:12,  7:9]  ≈ zeros(4,3)
-@test res[2][1:8, 10:12]  ≈ zeros(8,3)
+@test resx[2][5:12,  4:6]  ≈ zeros(8,3)
+@test resx[2][1:4,   7:9]  ≈ zeros(4,3)
+@test resx[2][9:12,  7:9]  ≈ zeros(4,3)
+@test resx[2][1:8, 10:12]  ≈ zeros(8,3)
 
-@test res[2][2:4,1:3]     ≈ 1.0*I(3)
-@test res[2][6:8,1:3]     ≈ 1.0*I(3)
-@test res[2][10:12,1:3]   ≈ 1.0*I(3)
-@test res[2][2:4,4:6]     ≈ -1.0*I(3)
-@test res[2][6:8,7:9]     ≈ -1.0*I(3)
+@test resx[2][2:4,1:3]     ≈ 1.0*I(3)
+@test resx[2][6:8,1:3]     ≈ 1.0*I(3)
+@test resx[2][10:12,1:3]   ≈ 1.0*I(3)
+@test resx[2][2:4,4:6]     ≈ -1.0*I(3)
+@test resx[2][6:8,7:9]     ≈ -1.0*I(3)
 
 #-----------------------------------------------------------------------
 #   zFc TEST
@@ -135,9 +135,9 @@ Zf = squirrel.idc( Zi , η , δtol , 24 )
 #   SINGLE LOCATOR TEST
 #-----------------------------------------------------------------------
 
-Xs = squirrel.slocator( X , η , δtol , 24 , false , zeros(4) , false )
+Xs = squirrel.slocator( X , η , δtol , 24 , false , Xc , false )
 
-@test Xs ≈ Xc  atol=δtol*mean(X)/10
+@test Xs[1] ≈ Xc  atol=δtol*mean(X)/10
 
 #-----------------------------------------------------------------------
 #   INITIAL DATA GENERATION (MULTI)
@@ -154,5 +154,5 @@ Zi  = ID6[3]
 #   MULTI LOCATOR TEST
 #-----------------------------------------------------------------------
 
-Xs = squirrel.mlocator( Y , η , δtol , 24 , 1e-20 , 1e1 , ne )
+Xs = squirrel.mlocator( Y , η , δtol , 24 , 1e-18 , 1e1 , ne )
 @test Xs ≈ Xc  atol=δtol*mean(Y)/10
