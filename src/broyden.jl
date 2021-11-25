@@ -34,7 +34,7 @@ function bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec
             Fi = F(xi)
             ΔF = Fi - F0
             F0 = Fi
-            p  = dot(F0,F0)
+            p  = norm(F0)
             ps = p
             i  = 2
             while i <= nb && b
@@ -42,7 +42,8 @@ function bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec
                 Δx = - Ji*F0
                 xi = xi + Δx
                 Fi = F(xi)
-                ( ΔF , F0 , pc ) = ( Fi - F0 , Fi , dot(F0,F0) )
+                ( ΔF , F0 ) = ( Fi - F0 , Fi )
+                pc = norm(F0)
                 if pc<p && pc<ps
                     ( p , ps , xs ) = ( pc , pc , xi )
                 elseif pc>p && k>=4
