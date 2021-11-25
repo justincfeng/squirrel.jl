@@ -394,8 +394,8 @@ for i=1:N
         ΔXs2 = [ [ td.Xtar[i]-td.Xsc[i] ] ; [ td.Xtar[i]-td.Xsca[i] ] ]
         ΔXc2 = [ [ td.Xtar[i]-td.Xc[i]  ] ; [ td.Xtar[i]-td.Xca[i]  ] ]
 
-        ΔXsq = ΔXs2[sort(norm.(ΔXs2))][1]
-        ΔXcr = ΔXc2[sort(norm.(ΔXc2))][1]
+        ΔXsq = ΔXs2[sortperm(norm.(ΔXs2))][1]
+        ΔXcr = ΔXc2[sortperm(norm.(ΔXc2))][1]
     end
 
     td.erh[i]   = abs( erH( td.Xtar[i] , ΔXsq ) )
