@@ -72,7 +72,7 @@ end     #---------------------------------------------------------------
 function nIRs( RE::Real , r::Real , θ::Real , ϕ::Real , Δnf::Function )
     # RE and r in units of Earth mass
     tpfl=typeof(RE)
-    um = tpfl(4.435028039117671e-6)         # Conversion factor to km
+    um = tpfl(4.435e-6)                     # Conversion factor to km
     h = (r - RE)*um                         # h in units of km
     return  one(tpfl) + Δnf(h,θ,ϕ)
 end     #---------------------------------------------------------------
@@ -85,7 +85,7 @@ function nIR( X::RealVec , Δnf::Function=Δntot )
 
     xs = SphericalFromCartesian()(X[2:4])
 
-    return  nIRs( rell(X[2:4]) , sqrt(dot(X[2:4],X[2:4])) , xs.θ , xs.ϕ 
+    return  nIRs( rell(X[2:4]) , norm(X[2:4]) , xs.θ , xs.ϕ 
                   , Δnf )
 end     #---------------------------------------------------------------
 
