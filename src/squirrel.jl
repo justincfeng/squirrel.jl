@@ -189,7 +189,7 @@ function slocator( X::RealMtx , gfunc::Function , δ::Real , nb::Int=24
         end
         Zi = idc( Zi , gfunc , δ , nb )
         Threads.@threads for i=1:4
-            ZfA[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
+            ZfB[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
         end
     
         return ( (ZfA[1:4,1] + ZfA[1:4,2] + ZfA[1:4,3] + ZfA[1:4,4])/4 ,
