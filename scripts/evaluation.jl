@@ -5,19 +5,15 @@
 #-----------------------------------------------------------------------
 
 using LinearAlgebra, Serialization, BenchmarkTools
-using CoordinateTransformations, Geodesy
 
-include("../src/evalsq.jl")
-include("../src/srl5.jl")
 include("../src/squirrel.jl")
-include("../src/geocoord.jl")
 include("../src/metric.jl")
 
 g  	= metric.g
 gk 	= metric.ge
 
 Neval	= 100           # Number of test cases to evaluate
-Nsamp	= 100000        # Number of test cases in generated sample file
+Nsamp	= 100           # Number of test cases in generated sample file
 
 nb      = 24            # Number of steps for Broyden solver
 tol	    = 1e-10         # Tolerance for ODE solver (OrdinaryDiffEq.jl)
@@ -44,7 +40,7 @@ X 	 = tct[3] ;
 Xtar = tct[4] ;
 np   = size(X[1])[2] ;
 	
-tc	= evalsq.TestCases(par,N,np,X,Xtar) ;
+tc	= squirrel.seval.TestCases(par,N,np,X,Xtar) ;
 
 #-----------------------------------------------------------------------
 #		DESERIALIZE GENERATED SAMPLE FILES (KERR GEOMETRY)
@@ -61,7 +57,7 @@ X 	 = tctk[3] ;
 Xtar = tctk[4] ;
 np 	 = size(X[1])[2] ;
 	
-tck	 = evalsq.TestCases(par,N,np,X,Xtar) ;
+tck	 = squirrel.seval.TestCases(par,N,np,X,Xtar) ;
 
 #-----------------------------------------------------------------------
 ne	= 6     # Number of emission points to consider
@@ -92,7 +88,7 @@ Pion 	= h->metric.P(h,h0i,σi)
 gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
 
 # Run evaluation function
-tdL = evalsq.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdL = squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))    # Filename suffix
 	
@@ -103,7 +99,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL) # Write to file
 δ1	= 0.001
 δ2	= 0.01
 gp 	= x->metric.gp(x,δ1,δ2)
-tdS = evalsq.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdS = squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -111,7 +107,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
 	
 #-----------------------------------------------------------------------
 	
-td0 = evalsq.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
+td0 = squirrel.seval.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 	
@@ -119,7 +115,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
 	
 #-----------------------------------------------------------------------
 	
-tdk = evalsq.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"k"
 	
@@ -149,7 +145,7 @@ pfx  = "td"
 Patm 	= h->metric.P(h,h0a,σa)
 Pion 	= h->metric.P(h,h0i,σi)
 gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
-tdL 	= evalsq.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdL 	= squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -160,7 +156,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL)
 δ1	= 0.001
 δ2	= 0.01
 gp 	= x->metric.gp(x,δ1,δ2)
-tdS 	= evalsq.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdS 	= squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -168,7 +164,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
 	
 #-----------------------------------------------------------------------
 	
-td0 	= evalsq.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
+td0 	= squirrel.seval.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 	
@@ -176,7 +172,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
 	
 #-----------------------------------------------------------------------
 	
-tdk = evalsq.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
 	
 sfx	= "n"*string(ne)*"k"
 	

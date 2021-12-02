@@ -3,12 +3,8 @@
 #-----------------------------------------------------------------------
 
 using LinearAlgebra, Serialization, BenchmarkTools
-using CoordinateTransformations, Geodesy
 
-include("../src/evalsq.jl")
-include("../src/srl5.jl")
 include("../src/squirrel.jl")
-include("../src/geocoord.jl")
 include("../src/metric.jl")
 
 g  	= metric.g
@@ -29,7 +25,7 @@ Nfs	= string(Nsamp)
 #	SAMPLES IN ANALOGUE GEOMETRY WITH ATMOSPHERIC & IONOSPHERIC EFFECTS
 #-----------------------------------------------------------------------
 
-tc	= evalsq.gen(Nsamp,g,6)
+tc	= squirrel.seval.gen(Nsamp,g,6)
 
 pfx	= "tct"
 
@@ -43,7 +39,7 @@ Serialization.serialize(tctloc,tct)
 #	SAMPLES IN KERR GEOMETRY
 #-----------------------------------------------------------------------
 
-tck 	= evalsq.gen(Nsamp,gk,6)
+tck 	= squirrel.seval.gen(Nsamp,gk,6)
 
 pfx	= "tck"
 
