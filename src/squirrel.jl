@@ -5,11 +5,16 @@ module squirrel     # BEGIN MODULE SQUIRREL
 using LinearAlgebra, Combinatorics, Statistics , DoubleFloats
 using ForwardDiff, DiffResults
 
-include("cereal.jl")
 include("type.jl")
 include("geosol.jl")
 include("broyden.jl")
 include("outlier.jl")
+include("seval.jl")
+
+include("metrics/Minkowski.jl")
+include("srl/FHC21.jl")
+include("srl/RTC21.jl")
+include("srl/mloc.jl")
 
 #-----------------------------------------------------------------------
 #
@@ -148,53 +153,23 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   SINGLE LOCATOR
+#   LOCATOR FOR FOUR EMISSION POINTS
 #-----------------------------------------------------------------------
-function slocator( X::RealMtx , gfunc::Function , δ::Real , nb::Int=24 
-                   , alt::Bool=false , Xg::RealVec=zeros(Float64,4) 
-                   , erc::Bool=false )
+function locator4( X::RealMtx , Xc::RealVec , gfunc::Function ,
+                   δ::Real , nb::Int=24 , erc::Bool=false )
     tpfl=typeof(X[1,1])
 
     Zi  = zeros(tpfl,8,4)
+    Zf = copy(Zi)
 
-    if alt
-        Zf = copy(Zi)
-        Xc = Xg
-
-        for i=1:4
-            Zi[:,i] = vcat( X[:,i] , Xc - X[:,i] )
-        end
-        Zi = idc( Zi , gfunc , δ , nb )
-        Threads.@threads for i=1:4
-            Zf[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
-        end
-        return ( (Zf[1:4,1] + Zf[1:4,2] + Zf[1:4,3] + Zf[1:4,4])/4 ,
-                 zeros(tpfl,4) )
-    else
-        ZfA = copy(Zi)
-        ZfB = copy(Zi)
-
-        Xc = cereal.slocator(X,false)
-
-        for i=1:4
-            Zi[:,i] = vcat( X[:,i] , Xc[1] - X[:,i] )
-        end
-        Zi = idc( Zi , gfunc , δ , nb )
-        Threads.@threads for i=1:4
-            ZfA[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
-        end
-    
-        for i=1:4
-            Zi[:,i] = vcat( X[:,i] , Xc[2] - X[:,i] )
-        end
-        Zi = idc( Zi , gfunc , δ , nb )
-        Threads.@threads for i=1:4
-            ZfB[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
-        end
-    
-        return ( (ZfA[1:4,1] + ZfA[1:4,2] + ZfA[1:4,3] + ZfA[1:4,4])/4 ,
-                 (ZfB[1:4,1] + ZfB[1:4,2] + ZfB[1:4,3] + ZfB[1:4,4])/4 )
+    for i=1:4
+        Zi[:,i] = vcat( X[:,i] , Xc - X[:,i] )
     end
+    Zi = idc( Zi , gfunc , δ , nb )
+    Threads.@threads for i=1:4
+        Zf[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
+    end
+    return (Zf[1:4,1] + Zf[1:4,2] + Zf[1:4,3] + Zf[1:4,4])/4 
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -206,33 +181,39 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   MULTI LOCATOR
 #-----------------------------------------------------------------------
-function mlocator( Yi::RealMtx , gfunc::Function , δ::Real ,
-                   nb::Int=24 , ξ1::Real=Double64(1e-18) , 
-                   ξ2::Real=1e1 , ne::Int=6 )
-    tpfl=typeof(Yi[1,1])
+function locator(  Yi::RealMtx , gfunc::Function , δ::Real ,
+                   nb::Int=24 , tpflc::DataType=Double64 , 
+                   outthresh::Real=1e1 , ne::Int=5 )
+    tpfl  = typeof(Yi[1,1])
 
-    if  size(Yi)[2] <= 4 && ne <= 4
+    l = size(Yi)
+
+    if  l[2] < 4 || ne < 4
         print("Need more than four emission points.")
         return zeros(tpfl,4)
-    else
-        if  ne > 4 && ne < size(Yi)[2]
+    elseif l[2] == 4 || ne == 4 
+        Xdual   = locator4FHC21( tpflc.(Y) )
+        X1 = locator4( Yi , Xdual[1] , gfunc , δ , nb , false )
+        X2 = locator4( Yi , Xdual[1] , gfunc , δ , nb , false )
+        return (X1,X2)
+    elseif l[2] >= 5
+        if  ne >= 5 && ne < size(Yi)[2]
             Y = Yi[:,1:ne]
-        elseif ne >= size(Yi)[2]
+        elseif size(Yi)[2] == 5 || ne >= size(Yi)[2]
             Y = Yi
         end
 
-        Xc      = cereal.mlocator( Y , Double64(ξ1) , false )[1]
+        Xc      = mlocator( tpflc.(Y) )
         W       = combX(Y)
         nr      = length(W)
         Xs      = [zeros(tpfl,4) for _ in 1:nr]
-        Xsa     = [zeros(tpfl,4) for _ in 1:nr]
 
         for i=1:nr
-            Xs[i]  = slocator( W[i] , gfunc , δ , nb , true ,
-                               tpfl.(Xc) , false )[1]
+            Xs[i]  = locator4( W[i] , tpfl.(Xc) , gfunc , δ , nb , 
+                               false )
         end
 
-        return mean(odetc( Xs , ξ2 )[1])
+        return mean(odetc( Xs , outthresh )[1])
     end
 end     #---------------------------------------------------------------
 

@@ -1,12 +1,16 @@
 #-----------------------------------------------------------------------
-module evalsq     # EVALUATION MODULE
+module seval     # EVALUATION MODULE
 #-----------------------------------------------------------------------
 
 using LinearAlgebra , Statistics, Combinatorics, ForwardDiff
+using DoubleFloats
 
-include("cereal.jl")
 include("type.jl")
 include("metrics/WeakFieldIso.jl")
+include("metrics/Minkowski.jl")
+include("srl/FHC21.jl")
+include("srl/RTC21.jl")
+include("srl/mloc.jl")
 include("outlier.jl")
 include("geosol.jl")
 
@@ -31,7 +35,7 @@ struct TestData                                      # TestData datatype
     N       ::  Int                 # Number of cases
     X       ::  Array{RealMtx,1}    # Emission points
     Xtar    ::  Array{RealVec,1}    # Target point
-    Xc      ::  Array{RealVec,1}    # Cereal position
+    Xc      ::  Array{RealVec,1}    # Flat spacetime position
     Xsc     ::  Array{RealVec,1}    # Squirrel position
     erh     ::  RealVec             # Horizontal errors
     erv     ::  RealVec             # Vertical error
@@ -39,8 +43,14 @@ struct TestData                                      # TestData datatype
     erhC    ::  RealVec             # Horizontal errors
     ervC    ::  RealVec             # Vertical error
     errC    ::  RealVec             # Total error
-    Xca     ::  Array{RealVec,1}    # Cereal position auxiliary
-    Xsca    ::  Array{RealVec,1}    # Squirrel position auxiliary
+    Xc2     ::  Array{RealVec,1}    # Flat spacetime position     (Aux.)
+    Xsc2    ::  Array{RealVec,1}    # Squirrel position      (Auxiliary)
+    erh2    ::  RealVec             # Horizontal errors      (Auxiliary)
+    erv2    ::  RealVec             # Vertical error         (Auxiliary)
+    err2    ::  RealVec             # Total error            (Auxiliary)
+    erhC2   ::  RealVec             # Horizontal errors      (Auxiliary)
+    ervC2   ::  RealVec             # Vertical error         (Auxiliary)
+    errC2   ::  RealVec             # Total error            (Auxiliary)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -95,7 +105,7 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 #
-#       FUNCTIONS FOR CHECKING CEREAL COMPATIBILITY
+#       FUNCTIONS FOR CHECKING srl5 COMPATIBILITY
 #
 #-----------------------------------------------------------------------
 
@@ -121,7 +131,7 @@ function slchk( X::RealMtx )
 
         b = true
         for i=1:nc
-            Y[i] = cereal.η( W[i][1] - W[i][2] , W[i][1] - W[i][2] )
+            Y[i] = ηdot( W[i][1] - W[i][2] , W[i][1] - W[i][2] )
             if Y[i] > zero(tpfl)
                 b = b * true
             else
@@ -345,9 +355,9 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #       MAIN EVALUATION FUNCTION
 #-----------------------------------------------------------------------
-function main( tc::TestCases , sloc::Function , g::Function
-    , nb::Int=24 , tol::Real=1e-9 , Nx::Int=-1 , tpfl::DataType=Float64 
-    , multi::Bool=true , ξ1::Real=1e4 , ξ2::Real=1e1 , ne::Real=6 )
+function main(  tc::TestCases , sloc::Function , g::Function ,
+                nb::Int=24 , tol::Real=1e-10 , Nx::Int=-1 , 
+                tpfl::DataType=Float64 , ξ::Real=2e1 , ne::Real=6 )
 par     = tc.par
 REs     = par[1]
 RR      = par[2]
@@ -370,6 +380,8 @@ X4      = zeros(tpfl,4,4)
 ΔXs2    = [[zeros(tpfl,4)];[zeros(tpfl,4)]]
 ΔXc2    = [[zeros(tpfl,4)];[zeros(tpfl,4)]]
 
+d = size(tc.X[1])[2]
+
 td = TestData( par , N , tc.X , tc.Xtar 
          , [zeros(tpfl,4) for _ in 1:N]
          , [zeros(tpfl,4) for _ in 1:N]
@@ -377,35 +389,53 @@ td = TestData( par , N , tc.X , tc.Xtar
          , zeros(tpfl,N) , zeros(tpfl,N) , zeros(tpfl,N)
          , [zeros(tpfl,4) for _ in 1:N]
          , [zeros(tpfl,4) for _ in 1:N]
+         , zeros(tpfl,N) , zeros(tpfl,N) , zeros(tpfl,N)
+         , zeros(tpfl,N) , zeros(tpfl,N) , zeros(tpfl,N)
          )
 
-for i=1:N
-    if multi || ne > 4 
-        td.Xsc[i]   = sloc( td.X[i] , g , tol , nb , ξ1 , ξ2 , ne )
-        td.Xc[i]    = cereal.mlocator( td.X[i] )[1]
-        ΔXsq = td.Xtar[i]-td.Xsc[i]
+if d >= 5 && ne >= 5
+    for i=1:N
+        td.Xc[i]    = mlocator( td.X[i] )
+        td.Xsc[i]   = sloc( td.X[i] , g , tol , nb , Double64 , ξ , ne )
+        ΔXsq = td.Xtar[i] - td.Xsc[i]
         ΔXcr = td.Xtar[i] - td.Xc[i]
-    else
-        X4 = td.X[i][:,1:4]
-        (td.Xsc[i],td.Xsca[i])  = 
-            sloc( X4 , g , tol , nb , false , zeros(Float64,4) , false )
-        (td.Xc[i],td.Xca[i])  = cereal.slocator( X4 )
 
-        ΔXs2 = [ [ td.Xtar[i]-td.Xsc[i] ] ; [ td.Xtar[i]-td.Xsca[i] ] ]
-        ΔXc2 = [ [ td.Xtar[i]-td.Xc[i]  ] ; [ td.Xtar[i]-td.Xca[i]  ] ]
+        td.erh[i]   = abs( erH( td.Xtar[i] , ΔXsq ) )
+        td.erv[i]   = abs( erV( td.Xtar[i] , ΔXsq ) )
+        td.err[i]   = norm( ΔXsq )
 
-        ΔXsq = ΔXs2[sortperm(norm.(ΔXs2))][1]
-        ΔXcr = ΔXc2[sortperm(norm.(ΔXc2))][1]
+        td.erhC[i]  = abs( erH( td.Xtar[i] , ΔXcr ) )
+        td.ervC[i]  = abs( erV( td.Xtar[i] , ΔXcr ) )
+        td.errC[i]  = norm( ΔXcr )
+        print("\r$i")
     end
+elseif d == 4 || (d >= 4 && ne == 4)
+    for i=1:N
+        (td.Xc[i] ,td.Xc2[i])   = locator4FHC21( td.X[i] )
+        (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , tol , nb , 
+                                        Double64 , ξ , ne )
+        ΔXsq  = td.Xtar[i] - td.Xsc[i]
+        ΔXcr  = td.Xtar[i] - td.Xc[i]
+        ΔXsq2 = td.Xtar[i] - td.Xsc2[i]
+        ΔXcr2 = td.Xtar[i] - td.Xc2[i]
 
-    td.erh[i]   = abs( erH( td.Xtar[i] , ΔXsq ) )
-    td.erv[i]   = abs( erV( td.Xtar[i] , ΔXsq ) )
-    td.err[i]   = norm( ΔXsq )
+        td.erh[i]   = abs( erH( td.Xtar[i] , ΔXsq ) )
+        td.erv[i]   = abs( erV( td.Xtar[i] , ΔXsq ) )
+        td.err[i]   = norm( ΔXsq )
 
-    td.erhC[i]  = abs( erH( td.Xtar[i] , ΔXcr ) )
-    td.ervC[i]  = abs( erV( td.Xtar[i] , ΔXcr ) )
-    td.errC[i]  = norm( ΔXcr )
-    print("\r$i")
+        td.erh2[i]   = abs( erH( td.Xtar[i] , ΔXsq2 ) )
+        td.erv2[i]   = abs( erV( td.Xtar[i] , ΔXsq2 ) )
+        td.er2r[i]   = norm( ΔXsq2 )
+
+        td.erhC[i]  = abs( erH( td.Xtar[i] , ΔXcr ) )
+        td.ervC[i]  = abs( erV( td.Xtar[i] , ΔXcr ) )
+        td.errC[i]  = norm( ΔXcr )
+
+        td.erhC2[i]  = abs( erH( td.Xtar[i] , ΔXcr2 ) )
+        td.ervC2[i]  = abs( erV( td.Xtar[i] , ΔXcr2 ) )
+        td.errC2[i]  = norm( ΔXcr2 )
+        print("\r$i")
+    end
 end
 
 return td
