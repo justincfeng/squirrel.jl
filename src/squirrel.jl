@@ -6,10 +6,10 @@ using LinearAlgebra, Combinatorics, Statistics , DoubleFloats
 using ForwardDiff, DiffResults
 
 include("type.jl")
+include("seval.jl")
 include("geosol.jl")
 include("broyden.jl")
 include("outlier.jl")
-include("seval.jl")
 
 include("metrics/Minkowski.jl")
 include("srl/FHC21.jl")
