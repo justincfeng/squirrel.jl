@@ -20,7 +20,16 @@ include("geosol.jl")
 #       STRUCTS
 #-----------------------------------------------------------------------
 
-#-----------------------------------------------------------------------
+"""
+# TestCases datatype
+
+This datatype may be populated by the associated function of the form:
+
+    TestCases( par::NTuple , N::Int , np::Int , X::Array{RealMtx,1} , Xtar::Array{RealVec,1} )
+
+The variable 'par' is a tuple of real parameters, 'N' is the number of generated test cases, 'np' is the number of emission points, 'X' is the matrix of emission points, and 'Xtar' is the target point.
+
+"""
 struct TestCases                                    # TestCases datatype
     par     ::  NTuple              # Parameter tuple
     N       ::  Int                 # Number of cases
@@ -30,6 +39,16 @@ struct TestCases                                    # TestCases datatype
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+# TestData datatype
+
+This datatype may be populated by the associated function of the form:
+
+    TestData( par::NTuple , N::Int , X::Array{RealMtx,1} , Xtar::Array{RealVec,1} , Xc::Array{RealVec,1} , Xsc::Array{RealVec,1} , erh::RealVec , erv::RealVec , err::RealVec , erhC::RealVec , ervC::RealVec , errC::RealVec , Xc2::Array{RealVec,1} , Xsc2::Array{RealVec,1} , erh2::RealVec , erv2::RealVec , err2::RealVec , erhC2::RealVec , ervC2::RealVec , errC2::RealVec )
+
+The variable 'par' is a tuple of real parameters, 'N' is the number of generated test cases, 'X' is the matrix of emission points, 'Xtar' is the target point, 'Xc' is the solution computed in flat spacetime, and 'Xsc' is the solution computed in curved spacetime. The quantities 'erh', 'erv'. and 'err' are the respective horizontal, vertical and total errors between 'Xsc' and 'Xtar', and the corresponding errors suffixed with 'C' are are constructed from 'Xc' and 'Xtar'. The quantities suffixed with '2' are auxiliary quantities which are needed in the four-point case.
+
+"""
 struct TestData                                      # TestData datatype
     par     ::  NTuple              # Parameter tuple
     N       ::  Int                 # Number of cases
