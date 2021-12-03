@@ -7,9 +7,16 @@ using OrdinaryDiffEq
 #-----------------------------------------------------------------------
 #       INITIAL DATA NULL ENFORCER FUNCTIONS
 #-----------------------------------------------------------------------
+
 #-----------------------------------------------------------------------
-#       Null condition enforcer: future-directed 
-#-----------------------------------------------------------------------
+"""
+    nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function ) 
+
+The `nullenforcerf` function takes a vector `V0` and modifies the time
+or first component so that it is null at the point `X` with respect to
+`gfunc` and future directed; the function returns the modified vector.
+
+"""
 function nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function )  
     tpfl=typeof(V0[1])
     nx = length(V0)
@@ -44,8 +51,14 @@ function nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Null condition enforcer: past-directed
-#-----------------------------------------------------------------------
+"""
+    nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function ) 
+
+The `nullenforcerp` function takes a vector `V0` and modifies the time
+or first component so that it is null at the point `X` with respect to
+`gfunc` and past directed; the function returns the modified vector.
+
+"""
 function nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function )
     tpfl=typeof(V0[1])
     nx = length(V0)
@@ -78,8 +91,15 @@ function nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Geodesic Hamiltonian
-#-----------------------------------------------------------------------
+"""
+    HamGeo( Z::RealVec , gfunc::Function )
+
+The `HamGeo` function computes the geodesic Hamiltonian 
+``H = \frac{1}{2} g^{μν} p_μ p_ν``
+from the metric ``g_{μν}`` provided in the function `gfunc` and the 
+spacetime position `x` and momentum `p` encoded in `Z=(x,p)`.
+
+"""
 function HamGeo( Z::RealVec , gfunc::Function )
     tpfl=typeof(Z[1])
 

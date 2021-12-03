@@ -29,6 +29,6 @@ squirrel.seval.gen
 ## Evaluation
 
 ```@docs
-squirrel.seval.gen
+squirrel.seval.main
 ```
 
