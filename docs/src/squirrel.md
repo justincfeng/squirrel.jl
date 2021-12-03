@@ -34,7 +34,7 @@ which is implemented in the following function:
 squirrel.JiSMU
 ```
 
-The Broyden update formula is implemented in the following function.
+The Broyden update formula is implemented in the following function:
 
 ```@docs
 squirrel.bsolve
@@ -43,4 +43,3 @@ squirrel.bsolve
 ## Geodesic integration
 
 
-## 

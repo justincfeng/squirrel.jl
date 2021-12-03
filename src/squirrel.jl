@@ -18,41 +18,65 @@ include("srl/mloc.jl")
 
 #-----------------------------------------------------------------------
 #
-#   GEODESIC INTEGRATOR AND ZERO FUNCTION
+#   GEODESIC ENDPOINT AND JACOBIAN
 #
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   GEODESIC SOLVER
-#-----------------------------------------------------------------------
-function gsolve( Xi::RealVec , Vi::RealVec , gfunc::Function , δ::Real 
+"""
+    gsolve( Xi::RealVec , Vi::RealVec , g::Function , tol::Real , integrator=AutoVern7(Rodas5()) )
+
+The `gsolve` function takes an initial point `Xi` and four velocity `Vi`
+and computes the endpoint of a future pointing null geodesic in the
+metric func `g`. The variable `integrator` specifies the integration
+scheme, and `tol` is the tolerance parameter.
+
+"""
+function gsolve( Xi::RealVec , Vi::RealVec , g::Function , tol::Real
                  , integrator=AutoVern7(Rodas5()) )
     tpfl=typeof(Xi[1])
     Z0 = zeros(tpfl,8)
-    V0 = nullenforcerf( Vi , Xi , gfunc )
+    V0 = nullenforcerf( Vi , Xi , g )
     Z0 = vcat( Xi , V0 )
-    return solveZ( Z0 , gfunc , δ , δ , integrator , δ )
+    return solveZ( Z0 , g , tol , tol , integrator , tol )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   ADD COMPONENT OF VECTOR
-#-----------------------------------------------------------------------
+"""
+    V34( V3::RealVec )
+
+The function `V34` takes a three-vector and constructs from it a
+four-vector with vanishing time component.
+
+"""
 function V34( V3::RealVec )
     tpfl = typeof(V3[1])
     return [ tpfl(0) ; V3[1] ; V3[2] ; V3[3] ]
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   VELOCITY INITIAL DATA FUNCTION
-#-----------------------------------------------------------------------
+"""
+    VidF( Zi::RealMtx )
+
+The function `VidF` takes a matrix of initial data points and constructs
+from it a single vector of initial 3-velocities for null vectors.
+
+"""
 function VidF( Zi::RealMtx )
     return vcat( Zi[6:8,1] , Zi[6:8,2] , Zi[6:8,3] , Zi[6:8,4] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   ZERO FUNCTION
-#-----------------------------------------------------------------------
-function zF( Vid::RealVec , Zi::RealMtx , gfunc::Function , δ::Real )
+"""
+    zF( Vid::RealVec , Zi::RealMtx , g::Function , tol::Real )
+
+The function `zF` returns differences between the endpoints of four
+geodesics for the initial data encoded in `Vid` and `Zi`, and the metric
+function `g`. The variable `tol` is the tolerance parameter for the
+integration. This function vanishes when the four geodesics intersect.
+
+"""
+function zF( Vid::RealVec , Zi::RealMtx , g::Function , tol::Real )
     # Want to find roots of this wrt initial velocity
     tpfl=typeof(Vid[1])
 
@@ -60,33 +84,37 @@ function zF( Vid::RealVec , Zi::RealMtx , gfunc::Function , δ::Real )
 
     Threads.@threads for i=1:4
         ( k1 , k2 ) = ( 1 + 3*(i-1) , 3 + 3*(i-1) )
-        Xf[i] = gsolve( Zi[1:4,i] , V34( Vid[k1:k2] ) , gfunc , δ )[1:4]
+        Xf[i] = gsolve( Zi[1:4,i] , V34( Vid[k1:k2] ) , g , tol )[1:4]
     end
 
     return vcat( Xf[1] - Xf[2] , Xf[1] - Xf[3] , Xf[1] - Xf[4] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#
-#   GEODESIC ENDPOINT AND JACOBIAN
-#
-#-----------------------------------------------------------------------
+"""
+    gejac( Xi::RealVec , Vi::RealVec , g::Function , δ::Real )
 
-#-----------------------------------------------------------------------
-#   CALCULATE GEODESIC ENDPOINT AND ITS JACOBIAN
-#-----------------------------------------------------------------------
-function gejac( X::RealVec , V::RealVec , g::Function , δ::Real )
-    v = V[2:4]
-    result = DiffResults.JacobianResult(vcat(X,V),v)
-    result = ForwardDiff.jacobian!( result , var->gsolve(X,V34(var),g,δ)
+The function `gejac` computes the endpoint of a geodesic and its
+Jacobian. The variables have the same meaning as those in `gsolve`.
+
+"""
+function gejac( Xi::RealVec , Vi::RealVec , g::Function , tol::Real )
+    v = Vi[2:4]
+    result = DiffResults.JacobianResult(vcat(Xi,Vi),v)
+    result = ForwardDiff.jacobian!(result,var->gsolve(Xi,V34(var),g,tol)
                                     , v )
     return ( DiffResults.value(result)
              , DiffResults.jacobian(result)[1:4,:] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   JACOBIAN CALCULATOR
-#-----------------------------------------------------------------------
+"""
+    geocJ( Zi::RealMtx , g::Function , δ::Real )
+
+The function `geocJ` computes the Jacobian of the function `zF` from the
+Jacobian endpoints computed in `gejac`.
+
+"""
 function geocJ( Zi::RealMtx , g::Function , δ::Real )
     tpfl=typeof(Zi[1,1])
     v   = zeros(tpfl,3)
@@ -117,26 +145,36 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   REARRANGE ENDPOINTS
-#-----------------------------------------------------------------------
+"""
+    zFc( Zf::RealMtx )
+
+The function `zFc` rearranges the endpoints `Zf` to match the output of
+the function `zF`.
+
+"""
 function zFc( Zf::RealMtx )
     return vcat( Zf[1:4,1] - Zf[1:4,2] , Zf[1:4,1] - Zf[1:4,3] ,
                  Zf[1:4,1] - Zf[1:4,4] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   INITIAL DATA CORRECTOR
-#-----------------------------------------------------------------------
-function idc( Zi::RealMtx , gfunc::Function , δ::Real , nb::Int )
+"""
+    idf( Zi::RealMtx , gfunc::Function , tol::Real , nb::Int )
+
+The function `idf` applies the Broyden algorithm to the function `zF`,
+using the Jacobian initially computed with `geocJ`.
+
+"""
+function idf( Zi::RealMtx , gfunc::Function , tol::Real , nb::Int )
     tpfl=typeof(Zi[1,1])
 
     Zf = copy(Zi)
     V0 = VidF(Zi)
-    res = geocJ( Zi , gfunc , δ )
+    res = geocJ( Zi , gfunc , tol )
 
     ( F0 , J ) = ( zFc(res[1]) , res[2] )
 
-    V = bsolve( v->zF(v,Zi,gfunc,δ) , J , F0 , V0 , nb )
+    V = bsolve( v->zF(v,Zi,gfunc,tol) , J , F0 , V0 , nb )
 
     Zf[5:8,1] = V34(  V[1:3]  )
     Zf[5:8,2] = V34(  V[4:6]  )
@@ -153,10 +191,17 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   LOCATOR FOR FOUR EMISSION POINTS
-#-----------------------------------------------------------------------
+"""
+    locator4( X::RealMtx , Xc::RealVec , gfunc::Function , tol::Real , nb::Int=24 , erc::Bool=false )
+
+The function `locator4` computes the intersection point from a set of
+four emission points `X` using the guess `Xc`. The intersection point is
+computed by first finding the initial data using the function `idf`,
+then integrating geodesics to obtain the result.
+
+"""
 function locator4( X::RealMtx , Xc::RealVec , gfunc::Function ,
-                   δ::Real , nb::Int=24 , erc::Bool=false )
+                   tol::Real , nb::Int=24 , erc::Bool=false )
     tpfl=typeof(X[1,1])
 
     Zi  = zeros(tpfl,8,4)
@@ -165,9 +210,9 @@ function locator4( X::RealMtx , Xc::RealVec , gfunc::Function ,
     for i=1:4
         Zi[:,i] = vcat( X[:,i] , Xc - X[:,i] )
     end
-    Zi = idc( Zi , gfunc , δ , nb )
+    Zi = idf( Zi , gfunc , tol , nb )
     Threads.@threads for i=1:4
-        Zf[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , δ )
+        Zf[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , tol )
     end
     return (Zf[1:4,1] + Zf[1:4,2] + Zf[1:4,3] + Zf[1:4,4])/4 
 end     #---------------------------------------------------------------
@@ -179,28 +224,35 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   MULTI LOCATOR
-#-----------------------------------------------------------------------
-function locator(  Yi::RealMtx , gfunc::Function , δ::Real ,
+"""
+    locator( X::RealMtx , gfunc::Function , δ::Real , nb::Int=24 , tpflc::DataType=Double64 , outthresh::Real=1e1 , ne::Int=5 )
+
+The function `locator` computes the intersection point from a set of
+`ne>4` emission points `X` by applying `locator4` to all combinations of
+`4` points out of `ne` in `X`. A basic outlier detection algorithm
+(implemented in the function `odetc`) is applied to reduce errors.
+
+"""
+function locator(  X::RealMtx , gfunc::Function , δ::Real ,
                    nb::Int=24 , tpflc::DataType=Double64 , 
                    outthresh::Real=1e1 , ne::Int=5 )
-    tpfl  = typeof(Yi[1,1])
+    tpfl  = typeof(X[1,1])
 
-    l = size(Yi)
+    l = size(X)
 
     if  l[2] < 4 || ne < 4
         print("Need more than four emission points.")
         return zeros(tpfl,4)
     elseif l[2] == 4 || ne == 4 
         Xdual   = locator4FHC21( tpflc.(Y) )
-        X1 = locator4( Yi , Xdual[1] , gfunc , δ , nb , false )
-        X2 = locator4( Yi , Xdual[1] , gfunc , δ , nb , false )
+        X1 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
+        X2 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
         return (X1,X2)
     elseif l[2] >= 5
-        if  ne >= 5 && ne < size(Yi)[2]
-            Y = Yi[:,1:ne]
-        elseif size(Yi)[2] == 5 || ne >= size(Yi)[2]
-            Y = Yi
+        if  ne >= 5 && ne < size(X)[2]
+            Y = X[:,1:ne]
+        elseif size(X)[2] == 5 || ne >= size(X)[2]
+            Y = X
         end
 
         Xc      = mlocator( tpflc.(Y) )
