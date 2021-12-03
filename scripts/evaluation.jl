@@ -88,7 +88,7 @@ Pion 	= h->metric.P(h,h0i,σi)
 gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
 
 # Run evaluation function
-tdL = squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdL = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))    # Filename suffix
 	
@@ -99,7 +99,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL) # Write to file
 δ1	= 0.001
 δ2	= 0.01
 gp 	= x->metric.gp(x,δ1,δ2)
-tdS = squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdS = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -107,15 +107,15 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
 	
 #-----------------------------------------------------------------------
 	
-td0 = squirrel.seval.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
+td0 = squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 	
 Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
 	
 #-----------------------------------------------------------------------
-	
-tdk = squirrel.seval.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
+
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"k"
 	
@@ -145,7 +145,7 @@ pfx  = "td"
 Patm 	= h->metric.P(h,h0a,σa)
 Pion 	= h->metric.P(h,h0i,σi)
 gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
-tdL 	= squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdL 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -156,7 +156,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL)
 δ1	= 0.001
 δ2	= 0.01
 gp 	= x->metric.gp(x,δ1,δ2)
-tdS 	= squirrel.seval.main(tc,squirrel.locator,gp,nb,tol,Neval,tpfl,ξ,ne)
+tdS 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
@@ -164,7 +164,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
 	
 #-----------------------------------------------------------------------
 	
-td0 	= squirrel.seval.main(tc,squirrel.locator,g,nb,tol,Neval,tpfl,ξ,ne)
+td0 	= squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 	
@@ -172,7 +172,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
 	
 #-----------------------------------------------------------------------
 	
-tdk = squirrel.seval.main(tck,squirrel.locator,gk,nb,tol,Neval,tpfl,ξ,ne)
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"k"
 	

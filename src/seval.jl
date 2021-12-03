@@ -21,15 +21,18 @@ include("geosol.jl")
 #-----------------------------------------------------------------------
 
 """
-# TestCases datatype
-
-This datatype may be populated by the associated function of the form:
+The TestCases datatype may be populated by the associated function of
+the form:
 
     TestCases( par::NTuple , N::Int , np::Int , X::Array{RealMtx,1} , Xtar::Array{RealVec,1} )
 
-The variable 'par' is a tuple of real parameters, 'N' is the number of
-generated test cases, 'np' is the number of emission points, 'X' is the
-matrix of emission points, and 'Xtar' is the target point.
+The variables are defined in the following way:
+
+    par     ::  NTuple              # Parameter tuple
+    N       ::  Int                 # Number of generated test cases
+    np      ::  Int                 # Number of emission points
+    X       ::  Array{RealMtx,1}    # Emission points
+    Xtar    ::  Array{RealVec,1}    # Target point
 
 """
 struct TestCases                                    # TestCases datatype
@@ -42,28 +45,44 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-# TestData datatype
+The TestData datatype may be populated by the associated function of the
+form:
 
-This datatype may be populated by the associated function of the form:
+    TestData(   par::NTuple , N::Int    , 
+                X::Array{RealMtx,1}     ,   Xtar::Array{RealVec,1}     ,
+                Xc::Array{RealVec,1}    ,   Xsc::Array{RealVec,1}      ,
+                erh::RealVec    ,   erv::RealVec    ,   err::RealVec   ,
+                erhC::RealVec   ,   ervC::RealVec   ,   errC::RealVec  ,
+                Xc2::Array{RealVec,1}   ,   Xsc2::Array{RealVec,1}     ,
+                erh2::RealVec   ,   erv2::RealVec   ,   err2::RealVec  ,
+                erhC2::RealVec  ,   ervC2::RealVec  ,   errC2::RealVec )
 
-    TestData(   par::NTuple , N::Int , 
-                X::Array{RealMtx,1}   , Xtar::Array{RealVec,1}   , 
-                Xc::Array{RealVec,1}  , Xsc::Array{RealVec,1}    , 
-                erh::RealVec   , erv::RealVec   , err::RealVec   , 
-                erhC::RealVec  , ervC::RealVec  , errC::RealVec  , 
-                Xc2::Array{RealVec,1} , Xsc2::Array{RealVec,1}   , 
-                erh2::RealVec  , erv2::RealVec  , err2::RealVec  , 
-                erhC2::RealVec , ervC2::RealVec , errC2::RealVec )
+The quantities are defined in the following way:
 
-The variable 'par' is a tuple of real parameters, 'N' is the number of
-generated test cases, 'X' is the matrix of emission points, 'Xtar' is
-the target point, 'Xc' is the solution computed in flat spacetime, and
-'Xsc' is the solution computed in curved spacetime. The quantities
-'erh', 'erv'. and 'err' are the respective horizontal, vertical and
-total errors between 'Xsc' and 'Xtar', and the corresponding errors
-suffixed with 'C' are are constructed from 'Xc' and 'Xtar'. The
-quantities suffixed with '2' are auxiliary quantities which are needed
-in the four-point case.
+    par     ::  NTuple              # Parameter tuple
+    N       ::  Int                 # Number of cases
+    X       ::  Array{RealMtx,1}    # Emission points
+    Xtar    ::  Array{RealVec,1}    # Target point
+    Xc      ::  Array{RealVec,1}    # Flat spacetime position
+    Xsc     ::  Array{RealVec,1}    # Squirrel position
+    erh     ::  RealVec             # Horizontal error relative to Xsc
+    erv     ::  RealVec             # Vertical error relative to Xsc
+    err     ::  RealVec             # Total error relative to Xsc
+    erhC    ::  RealVec             # Horizontal error relative to Xc
+    ervC    ::  RealVec             # Vertical error relative to Xc
+    errC    ::  RealVec             # Total error relative to Xc
+    Xc2     ::  Array{RealVec,1}    # Flat spacetime position     (Aux.)
+    Xsc2    ::  Array{RealVec,1}    # Squirrel position      (Auxiliary)
+    erh2    ::  RealVec             # Horizontal errors      (Auxiliary)
+    erv2    ::  RealVec             # Vertical error         (Auxiliary)
+    err2    ::  RealVec             # Total error            (Auxiliary)
+    erhC2   ::  RealVec             # Horizontal errors      (Auxiliary)
+    ervC2   ::  RealVec             # Vertical error         (Auxiliary)
+    errC2   ::  RealVec             # Total error            (Auxiliary)
+
+The quantities suffixed with `2` are auxiliary quantities which are
+needed in the four-point case, in which the special relativistic
+location algorithms generally suffer from the bifurcation problem.
 
 """
 struct TestData                                      # TestData datatype
@@ -90,6 +109,26 @@ struct TestData                                      # TestData datatype
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+    tcfl( tc::TestCases , tpfl::DataType=Float64 )
+
+The `tcfl` function changes the floating point type of `tc` to `tpfl`.
+
+"""
+function tcfl( tc::TestCases , tpfl::DataType=Float64 )
+    par2    = tpfl.(tc.par)
+    N       = tc.N
+    np      = tc.np
+    X2      = [zeros(tpfl,4,np) for _ in 1:N]
+    Xtar2   = [zeros(tpfl,4) for _ in 1:N]
+
+    for i=1:N 
+        X2[i]     = tpfl.(tc.X[i])
+        Xtar2[i]  = tpfl.(tc.Xtar[i])
+    end
+
+    return TestCases( par2 , N , np , X2 , Xtar2 )
+end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 #
@@ -98,8 +137,13 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Random rotation generator
-#-----------------------------------------------------------------------
+"""
+    roteuler( tpfl::DataType=Float64 )
+
+The `roteuler` function constructs a random rotation matrix `R` and its 
+inverse as a tuple `(R,inv(R))`.
+
+"""
 function roteuler( tpfl::DataType=Float64 )
     α = 2*pi*rand(tpfl)     # Euler angles
     β = 2*pi*rand(tpfl)
@@ -117,15 +161,25 @@ function roteuler( tpfl::DataType=Float64 )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Angle between vectors
-#-----------------------------------------------------------------------
+"""
+    angvec( u::RealVec , v::RealVec )
+
+The `angvec` function computes the angle between the vectors `u` and 
+`v`.
+
+"""
 function angvec( u::RealVec , v::RealVec )
     return acos( dot(u,v)/(norm(u)*norm(v)) )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Angle margin checker
-#-----------------------------------------------------------------------
+"""
+    angmar( θ::Real , Δψ::Real )
+
+The `angmar` function checks whether the angle `θ` falls in the range 
+`0<θ<π/2 - |Δψ|`.
+
+"""
 function angmar( θ::Real , Δψ::Real )
     if θ <= π/2 && θ >+ 0
         ϕ = abs( π/2 - θ )
@@ -140,14 +194,13 @@ function angmar( θ::Real , Δψ::Real )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#
-#       FUNCTIONS FOR CHECKING srl5 COMPATIBILITY
-#
-#-----------------------------------------------------------------------
+"""
+    slchk( X::RealMtx )
 
-#-----------------------------------------------------------------------
-#       Check spacelike separation
-#-----------------------------------------------------------------------
+The `slchk` function checks whether the emission points in the matrix `X`
+are spacelike separated with respect to the Minkowski metric `η_{μν}`.
+
+"""
 function slchk( X::RealMtx )
     tpfl = typeof(X[1])
     np = size(X)[2]
@@ -188,6 +241,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #       Generates single random 3-component directional vector
 #-----------------------------------------------------------------------
+#-----------------------------------------------------------------------
+"""
+    vrgen( scale::Real , Δψ::Real , u::RealVec=Float64[1;0;0] )
+
+The `vrgen` function generates a vector of length `scale` which makes
+an angle `θ<π/2-|ΔΨ|`.
+
+"""
 function vrgen( scale::Real , Δψ::Real , u::RealVec=Float64[1;0;0] )
     # scale determines length, Δψ determines angle margins
     tpfl=typeof(scale)
@@ -213,25 +274,37 @@ function vrgen( scale::Real , Δψ::Real , u::RealVec=Float64[1;0;0] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Intersection with Rs calculator
-#-----------------------------------------------------------------------
-function irscalc( x::RealVec , dx::RealVec , Re::Real , Rs::Real )
-    return  (
-                -(Re*(dx[1]*x[1] + dx[2]*x[2] + dx[3]*x[3])) +
-                sqrt(abs(
-                    4*Rs^2*(dx[1]^2 + dx[2]^2 + dx[3]^2) +
-                    Re^2*(
-                           4*(dx[1]*x[1] + dx[2]*x[2] + dx[3]*x[3])^2 - 
-                           4*(dx[1]^2 + dx[2]^2 + dx[3]^2)*(x[1]^2 + 
-                           x[2]^2 + x[3]^2)
-                         )
-                    ))/2
-            )/(dx[1]^2 + dx[2]^2 + dx[3]^2)
+"""
+    λiRscalc( xtar::RealVec , V::RealVec , Re::Real , Rs::Real )
+
+The `λiRscalc` function computes the value of the affine parameter `λ`
+for the test cases. Given the straight line `Y=Re*xtar+λ*V` passing 
+through the point `Re*xtar`, it computes the value of `λ` at which the
+spatial components of the line `Y[2:4]` have a norm `norm(Y[2:4])=Rs`.
+
+"""
+function λiRscalc( xtar::RealVec , V::RealVec , Re::Real , Rs::Real )
+return  (
+          -(Re*(V[1]*xtar[1] + V[2]*xtar[2] + V[3]*xtar[3])) +
+          sqrt(abs(
+            4*Rs^2*(V[1]^2 + V[2]^2 + V[3]^2) +
+            Re^2*(
+                  4*(V[1]*xtar[1] + V[2]*xtar[2] + V[3]*xtar[3])^2 -
+                  4*(V[1]^2 + V[2]^2 + V[3]^2)*(xtar[1]^2 +
+                  xtar[2]^2 + xtar[3]^2)
+                 )
+            ))/2
+        )/(V[1]^2 + V[2]^2 + V[3]^2)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Generates random 3-component position vector
-#-----------------------------------------------------------------------
+"""
+    x3gen(tpfl::DataType=Float64)
+
+The `x3gen` function generates a random 3-component position vector of
+length `rell(x)` is the `WGS84` Earth reference ellipsoid radius.
+
+"""
 function x3gen(tpfl::DataType=Float64)
     x   = tpfl[ 1 ; 0 ; 0 ]
     rot = roteuler(tpfl)
@@ -240,8 +313,14 @@ function x3gen(tpfl::DataType=Float64)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Initial data construction
-#-----------------------------------------------------------------------
+"""
+    tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function )
+
+The `tidc` function generates initial data for null geodesics given a
+position vector `x`, velocity vector `v`, affine parameter `λ`, and a
+metric function `gfunc`.
+
+"""
 function tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function )
     tpfl=typeof(x[1])
 
@@ -264,31 +343,43 @@ end     #---------------------------------------------------------------
 #
 #-----------------------------------------------------------------------
 
-function pgen( Rs::Real , gfunc::Function , δ::Real , n::Int=4 
-               , Δψ::Real=Δψ0 , ctest::Bool=false , δf::Real=2 
-               , ntest::Int=4 )
+#-----------------------------------------------------------------------
+"""
+    pgen( Rs::Real , gfunc::Function , tol::Real , np::Int=4 , 
+          Δψ::Real=Δψ0 )
+
+The `pgen` function generates a target point `Xtar` and `np` emission
+points in a `4×np` matrix `X` such that the points in `X` lie on the
+past light cone of `Xtar` with respect to the metric `gfunc`, and have
+spatial radii values of `~Rs` (defined with respect to spatial origin).
+The parameter `tol` is the tolerance parameter for the integration. This
+function returns the tuple `(X,Xtar)`.
+
+"""
+function pgen( Rs::Real , gfunc::Function , tol::Real , np::Int=4 , 
+               Δψ::Real=Δψ0 )
     tpfl=typeof(Rs)
 
-    Z   = zeros(tpfl,8,n)
-    Zi  = zeros(tpfl,8,n)
+    Z   = zeros(tpfl,8,np)
+    Zi  = zeros(tpfl,8,np)
 
-    X   = zeros(tpfl,4,n)
+    X   = zeros(tpfl,4,np)
 
     Xc  = zeros(tpfl,4,4)
 
     xi  = x3gen(tpfl)
-    vi  = zeros(tpfl,3,n)
-    λi  = zeros(tpfl,n)
+    vi  = zeros(tpfl,3,np)
+    λi  = zeros(tpfl,np)
 
-    for i=1:n
+    for i=1:np
         B = true
         while B
             vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
-            λi[i]   = irscalc(xi/rell(xi),vi[:,i],rell(xi),Rs)
+            λi[i]   = λiRscalc(xi/rell(xi),vi[:,i],rell(xi),Rs)
             vi[:,i] = λi[i]*vi[:,i]
 
             Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
-            Z[:,i]  = solveZ( Zi[:,i] , gfunc , δ , δ 
+            Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
                               , AutoVern9(Rodas5()) )
             X[:,i]  = Z[1:4,i]
 
@@ -307,22 +398,7 @@ function pgen( Rs::Real , gfunc::Function , δ::Real , n::Int=4
         end
     end
 
-    if ctest
-        Zn   = [zeros(tpfl,8,n) for _ in 1:ntest]
-        Xn   = [zeros(tpfl,4,n) for _ in 1:ntest]
-
-        for j=1:ntest
-            δ = δ/δf
-            for i=1:n
-                Zn[j][:,i]  = solveZ( Zi[:,i] , gfunc , δ , δ 
-                              , AutoVern9(Rodas5()) )
-                Xn[j][:,i]  = Zn[j][1:4,i]
-            end
-        end
-        return ( X , Zi[1:4,1] , Xn )
-    else
-        return ( X , Zi[1:4,1] )
-    end
+    return ( X , Zi[1:4,1] )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -331,13 +407,29 @@ end     #---------------------------------------------------------------
 #
 #-----------------------------------------------------------------------
 
+#-----------------------------------------------------------------------
+"""
+    gen( N::Int , g::Function , np::Int=4 , Δψ::Real=Δψ0 
+              , tpfl::DataType=Float64 
+              , REs ::  Real=1.4365276211950395e9       # Earth radius
+              , RR  ::  Real=1.4365277e9    # Just above Earth surface
+              , Rs  ::  Real=6e9            # Satellite radius
+              , tolh::  Real=1e-14          # Tolerance for ODE solvers
+              , tol ::  Real=1e-10          # Tolerance for ODE solvers
+            )
+
+The `gen` function generates `N` sets of target points `Xtar` and 
+emission points `X` with respect to the metric `gfunc`. This function
+returns a quantity of the TestCases datatype.
+
+"""
 function gen( N::Int , g::Function , np::Int=4 , Δψ::Real=Δψ0 
               , tpfl::DataType=Float64 
               , REs ::  Real=1.4365276211950395e9       # Earth radius
               , RR  ::  Real=1.4365277e9    # Just above Earth surface
               , Rs  ::  Real=6e9            # Satellite radius
               , tolh::  Real=1e-14          # Tolerance for ODE solvers
-              , tol ::  Real=1e-9           # Tolerance for ODE solvers
+              , tol ::  Real=1e-10          # Tolerance for ODE solvers
             )
 
 par = (REs,RR,Rs,tolh,tol)
@@ -362,8 +454,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Horizontal Error
-#-----------------------------------------------------------------------
+"""
+    erH( Xtar::RealVec , ΔX::RealVec )
+
+The `erH` function projects the vector `ΔX` in the direction orthogonal
+to the vector `Xtar`. This is used to compute the horizontal error in
+the terrestrial positioning problem.
+
+"""
 function erH( Xtar::RealVec , ΔX::RealVec )
     tpfl = typeof(Xtar[1])
     x    = copy(Xtar[2:4])
@@ -377,8 +475,14 @@ function erH( Xtar::RealVec , ΔX::RealVec )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Vertical Error
-#-----------------------------------------------------------------------
+"""
+    erV( Xtar::RealVec , ΔX::RealVec )
+
+The `erV` function projects the vector `ΔX` in the direction along the
+vector `Xtar`. This is used to compute the vertical error in the
+terrestrial positioning problem.
+
+"""
 function erV( Xtar::RealVec , ΔX::RealVec )
     tpfl = typeof(Xtar[1])
     x    = copy(Xtar[2:4])
@@ -389,23 +493,41 @@ function erV( Xtar::RealVec , ΔX::RealVec )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       MAIN EVALUATION FUNCTION
-#-----------------------------------------------------------------------
-function main(  tc::TestCases , sloc::Function , g::Function ,
-                nb::Int=24 , tol::Real=1e-10 , Nx::Int=-1 , 
-                tpfl::DataType=Float64 , ξ::Real=2e1 , ne::Real=6 )
-par     = tc.par
+"""
+    main(  tc::TestCases , sloc::Function , g::Function , Nx::Int=-1 , 
+           tpfl::DataType=Double64 , tol::Real=1e-10 , ξ::Real=2e1 , 
+           nb::Int=24 , ne::Real=6 )
+
+This is the main evaluation function. It takes as input a collection of
+test cases contained in a quantity of datatype `TestCases`, and
+evaluates the squirrel locator function `sloc` on each test case
+relative to a given metric function `g`. The function `main` returns
+results in a quantity of type `TestData`.
+
+The variable `Nx` is a limiter for the number of test cases to run. The
+variable `tpfl` specifies the floating point precision for the
+calculations. variables `tol`, `ξ`, `nb`,  and `ne` are inputs for the
+`sloc` function, and correspond respectively to the integration
+tolerance, outlier detection threshold, number of steps for the Broyden
+algorithm, and number of emission points.
+
+"""
+function main(  tc::TestCases , sloc::Function , g::Function , 
+                Nx::Int=-1 , tpfl::DataType=Float64 , tol::Real=1e-10 , 
+                ξ::Real=2e1 , nb::Int=24 , ne::Real=6 )
+tc2     = tcfl(tc,tpfl)
+par     = tc2.par
 REs     = par[1]
 RR      = par[2]
 Rs      = par[3]
 tolh    = par[4]
 
 if Nx==-1
-N   = tc.N
+N   = tc2.N
 else
 N   = Nx
 end
-np      = tc.np
+np      = tc2.np
 
 nc      = binomial(np,4)
 
@@ -416,9 +538,9 @@ X4      = zeros(tpfl,4,4)
 ΔXs2    = [[zeros(tpfl,4)];[zeros(tpfl,4)]]
 ΔXc2    = [[zeros(tpfl,4)];[zeros(tpfl,4)]]
 
-d = size(tc.X[1])[2]
+d = size(tc2.X[1])[2]
 
-td = TestData( par , N , tc.X , tc.Xtar 
+td = TestData( par , N , tc2.X , tc2.Xtar 
          , [zeros(tpfl,4) for _ in 1:N]
          , [zeros(tpfl,4) for _ in 1:N]
          , zeros(tpfl,N) , zeros(tpfl,N) , zeros(tpfl,N)
