@@ -95,7 +95,7 @@ end     #---------------------------------------------------------------
     HamGeo( Z::RealVec , gfunc::Function )
 
 The `HamGeo` function computes the geodesic Hamiltonian 
-``H = \frac{1}{2} g^{μν} p_μ p_ν``
+``H = \\frac{1}{2} g^{μν} p_μ p_ν``
 from the metric ``g_{μν}`` provided in the function `gfunc` and the 
 spacetime position `x` and momentum `p` encoded in `Z=(x,p)`.
 
