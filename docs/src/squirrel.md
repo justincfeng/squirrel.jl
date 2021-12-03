@@ -40,6 +40,34 @@ The Broyden update formula is implemented in the following function:
 squirrel.bsolve
 ```
 
-## Geodesic integration
+## Geodesic endpoints and Jacobian
 
+```@docs
+squirrel.gsolve
+```
 
+```@docs
+squirrel.zF
+```
+
+```@docs
+squirrel.gejac
+```
+
+```@docs
+squirrel.geocJ
+```
+
+```@docs
+squirrel.idf
+```
+
+## Locator
+
+```@docs
+squirrel.locator4
+```
+
+```@docs
+squirrel.locator
+```
