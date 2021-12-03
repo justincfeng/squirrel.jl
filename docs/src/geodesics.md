@@ -56,7 +56,7 @@ Hamilton's equations may be written in terms of the phase space coordinate ``z^�
 \frac{dz^α}{dλ} = J^{αβ} \frac{∂H}{∂z^β}.
 ```
 
-where ``J^{αβ}`` is the symplectic matrix, which has the form:
+where ``J^{αβ}`` is the symplectic matrix, which has the block matrix form:
 
 ```math
 J =
@@ -65,23 +65,34 @@ J =
      O  &  I  \\
      -I  &  O  
   \end{array}
-\right].
+\right],
 ```
 
-
-## Initial data
+where ``O`` is a ``4×4`` matrix of zeros and ``I`` is the identity
+matrix. The symplectic matrix is implemented as an operator acting on
+a vector ``{∂H}/{∂z^β}``:
 
 ```@docs
-squirrel.nullenforcerp
+squirrel.Jsympl
 ```
+
+The quantity ``J^{αβ} \frac{∂H}{∂z^β}`` is evaluated in the following function: 
 
 ```@docs
-squirrel.nullenforcerp
+squirrel.ZdotGeo
 ```
 
-## Geodesic functions
+The symplectic operator 
+
+## Geodesic solver function
+
+Geodesics are solved with the following function, which outputs the endpoint (``λ=1``) of the solution to Hamilton's equations:
 
 ```@docs
-squirrel.HamGeo
+squirrel.solveZ
 ```
 
+Following the recommendations in the [ODE
+Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/#ode_solve)
+documentation, the integrators `AutoVern7(Rodas5())` and
+`AutoVern9(Rodas5())` are used in `squirrel.jl`.
