@@ -10,7 +10,7 @@ include("../src/metric.jl")
 g  	= metric.g
 gk 	= metric.ge
 
-Nsamp   = 100
+Nsamp   = 10
 # N	= 100000
 
 nb	= 24
@@ -29,11 +29,9 @@ tc	= squirrel.seval.gen(Nsamp,g,6)
 
 pfx	= "tct"
 
-tct 	= (Nsamp,tc.par,tc.X,tc.Xtar)
-
 tctloc	= dir*pfx*"-"*Nfs*sufx
 
-Serialization.serialize(tctloc,tct)
+Serialization.serialize(tctloc,squirrel.seval.tc2tup(tc))
 
 #-----------------------------------------------------------------------
 #	SAMPLES IN KERR GEOMETRY
@@ -43,10 +41,8 @@ tck 	= squirrel.seval.gen(Nsamp,gk,6)
 
 pfx	= "tck"
 
-tctk 	= (Nsamp,tck.par,tck.X,tck.Xtar)
-
 tckloc	= dir*pfx*"-"*Nfs*sufx
 
-Serialization.serialize(tckloc,tctk)
+Serialization.serialize(tckloc,squirrel.seval.tc2tup(tck))
 
 #-----------------------------------------------------------------------

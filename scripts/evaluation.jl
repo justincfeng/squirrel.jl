@@ -12,8 +12,8 @@ include("../src/metric.jl")
 g  	= metric.g          # Gordon metric with standard parameters
 gk 	= metric.ge         # Kerr-Schild with Earth parameters
 
-Neval	= 100           # Number of test cases to evaluate
-Nsamp	= 100           # Number of test cases in generated sample file
+Neval	= 10            # Number of test cases to evaluate
+Nsamp	= 10            # Number of test cases in generated sample file
 
 nb      = 24            # Number of steps for Broyden solver
 tol	    = 1e-10         # Tolerance for ODE solver (OrdinaryDiffEq.jl)
@@ -32,15 +32,9 @@ Nfs	    = string(Nsamp)     # Turn Nfile into a string
 pfx	= "tct" ;
 tctloc	= dir*pfx*"-"*Nfs*sufx ;
 
-tct	= Serialization.deserialize(tctloc)    ;
+tct	= Serialization.deserialize(tctloc) ;
 	
-N    = tct[1] ;
-par  = tct[2] ;
-X 	 = tct[3] ;
-Xtar = tct[4] ;
-np   = size(X[1])[2] ;
-	
-tc	= squirrel.seval.TestCases(par,N,np,X,Xtar) ;
+tc	= squirrel.seval.tup2tc( tct ) ;
 
 #-----------------------------------------------------------------------
 #		DESERIALIZE GENERATED SAMPLE FILES (KERR GEOMETRY)
@@ -51,13 +45,7 @@ tckloc	= dir*pfx*"-"*Nfs*sufx ;
 
 tctk	= Serialization.deserialize(tckloc) ;
 	
-N	 = tctk[1] ;
-par  = tctk[2] ;
-X 	 = tctk[3] ;
-Xtar = tctk[4] ;
-np 	 = size(X[1])[2] ;
-	
-tck	 = squirrel.seval.TestCases(par,N,np,X,Xtar) ;
+tck	 = squirrel.seval.tup2tc( tctk ) ;
 
 #-----------------------------------------------------------------------
 ne	= 6     # Number of emission points to consider
