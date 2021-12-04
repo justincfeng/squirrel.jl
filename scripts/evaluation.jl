@@ -9,8 +9,8 @@ using LinearAlgebra, Serialization, BenchmarkTools
 include("../src/squirrel.jl")
 include("../src/metric.jl")
 
-g  	= metric.g
-gk 	= metric.ge
+g  	= metric.g          # Gordon metric with standard parameters
+gk 	= metric.ge         # Kerr-Schild with Earth parameters
 
 Neval	= 100           # Number of test cases to evaluate
 Nsamp	= 100           # Number of test cases in generated sample file
@@ -91,8 +91,10 @@ gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
 tdL = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))    # Filename suffix
+
+tdLtup = squirrel.seval.td2tup( tdL )
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL) # Write to file
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdLtup)
 	
 #-----------------------------------------------------------------------
 	
@@ -102,29 +104,31 @@ gp 	= x->metric.gp(x,δ1,δ2)
 tdS = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
+
+tdStup = squirrel.seval.td2tup( tdS )
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdStup)
 	
 #-----------------------------------------------------------------------
 	
 td0 = squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p0"
+
+td0tup = squirrel.seval.td2tup( td0 )
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0tup)
 	
 #-----------------------------------------------------------------------
 
 tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"k"
-	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdk)
-	
-#-----------------------------------------------------------------------
-	
-td6	= (tdL,tdS,td0,tdk)
-	
+
+tdktup = squirrel.seval.td2tup( tdk )
+
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdktup)
+
 #-----------------------------------------------------------------------
 ne	= 5     # Number of emission points to consider
 #-----------------------------------------------------------------------
@@ -148,8 +152,10 @@ gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
 tdL 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
+
+tdLtup = squirrel.seval.td2tup( tdL )
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdL)
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdLtup)
 	
 #-----------------------------------------------------------------------
 	
@@ -160,7 +166,9 @@ tdS 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdS)
+tdStup = squirrel.seval.td2tup( tdS )
+	
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdStup)
 	
 #-----------------------------------------------------------------------
 	
@@ -168,7 +176,9 @@ td0 	= squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0)
+td0tup = squirrel.seval.td2tup( td0 )
+	
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0tup)
 	
 #-----------------------------------------------------------------------
 	
@@ -176,10 +186,8 @@ tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"k"
 	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdk)
-	
-#-----------------------------------------------------------------------
-	
-td5	= (tdL,tdS,td0,tdk)
-	
+tdktup = squirrel.seval.td2tup( tdk )
+
+Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdktup)
+
 #-----------------------------------------------------------------------

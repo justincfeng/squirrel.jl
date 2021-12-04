@@ -131,6 +131,60 @@ function tcfl( tc::TestCases , tpfl::DataType=Float64 )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+    tc2tup( tc::TestCases )
+
+The `tc2tup` function changes `tc` from an object of type `TestCases` to 
+a tuple.
+
+"""
+function tc2tup( tc::TestCases )
+    return ( tc.par , tc.N , tc.np , tc.X , tc.Xtar )
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+"""
+    td2tup( td::TestData )
+
+The `td2tup` function changes `td` from an object of type `TestData` to 
+a tuple.
+
+"""
+function td2tup( td::TestData )
+    return ( td.par , td.N , td.X , td.Xtar , td.Xc , td.Xsc , td.erh , 
+             td.erv , td.err , td.erhC , td.ervC , td.errC , td.Xc2 , 
+             td.Xsc2 , td.erh2 , td.erv2 , td.err2 , td.erhC2 , 
+             td.ervC2 , td.errC2 )
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+"""
+    tup2tc( tctup::Tuple )
+
+The `tc2tup` function changes `tc` from an object of type `TestCases` to 
+a tuple.
+
+"""
+function tup2tc( tctup::Tuple )
+    return TestCases(tctup[1],tctup[2],tctup[3],tctup[4],tctup[5])
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+"""
+    tup2td( tdtup::Tuple )
+
+The `td2tup` function changes `td` from an object of type `TestData` to 
+a tuple.
+
+"""
+function tup2td( tdtup::Tuple )
+    return TestData(tdtup[1] ,tdtup[2] ,tdtup[3] ,tdtup[4] ,tdtup[5] ,
+                    tdtup[6] ,tdtup[7] ,tdtup[8] ,tdtup[9] ,tdtup[10],
+                    tdtup[11],tdtup[12],tdtup[13],tdtup[14],tdtup[15],
+                    tdtup[16],tdtup[17],tdtup[18],tdtup[19],tdtup[20])
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
 #
 #       GENERAL FUNCTIONS
 #

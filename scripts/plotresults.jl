@@ -1,194 +1,217 @@
-#---------------------------------------------------------------------------------------;
+#-----------------------------------------------------------------------
 #		PLOTS AND RESULTS
-#---------------------------------------------------------------------------------------;
+#-----------------------------------------------------------------------
 
 using Plots, LinearAlgebra, Serialization, BenchmarkTools
-using CoordinateTransformations, Geodesy
 
-include("../src/type.jl")
-include("../src/evalsq.jl")
-include("../src/srl5.jl")
 include("../src/squirrel.jl")
-include("../src/geocoord.jl")
 include("../src/metric.jl")
+include("../src/type.jl")
 include("plotfunc.jl")
 
-g  	= metric.g
-gk 	= metric.ge
+#-----------------------------------------------------------------------
+#       PLOT PARAMETERS
+#-----------------------------------------------------------------------
 
-N	= 100000
-# N	= 100000
+Neval	= 100000                   # Number of test cases evaluated
+N	= 100000                   # Number of test cases to plot
 
-nb	= 24
-tol	= 1e-10
-ξ1	= 1e-18
-ξ2	= 1e1	
-sufx 	= ""
-dir 	= "../res/"
-Ns	= string(N)
+pfx     = "td"                  # Filename string prefix
+sufx 	= ""                    # Filename string suffix
+dir 	= "../res/"             # Results directory
+Nes	= string(Neval)         # Turn Neval into a string
+Ns      = string(N)             # Turn Ns into a string
 
-rms=x->sqrt(dot(x,x)/length(x))
-mfact   = 0.004435
-cmfact  = 0.4435
-mmfact  = 4.435
+tpfl    = Float64               # Floating point precision to use
 
-#---------------------------------------------------------------------------------------;
-ne	= 6
-#---------------------------------------------------------------------------------------;
+#-----------------------------------------------------------------------
+#       CONVERSION FACTORS
+#-----------------------------------------------------------------------
+
+mfact   = 0.004435              # conversion factor to meters
+cmfact  = 0.4435                # conversion factor to centimeters
+mmfact  = 4.435                 # conversion factor to millimeters
+
+#-----------------------------------------------------------------------
+ne	= 5
+#-----------------------------------------------------------------------
 	
-tpfl =Float64
-	
-h0a  = tpfl[  0  ;  4  ;  8  ;  12  ;  16  ]
-σa   = tpfl[  2  ; 1.5 ; 1.8 ;  1.7 ;  1.5 ]
-h0i  = tpfl[  150  ;  200  ;  250  ;  300  ;  350  ]
-σi   = tpfl[  21   ;  15   ;  18   ;  21   ;  10   ]
+#-----------------------------------------------------------------------
 
-Patm 	= h->metric.P(h,h0a,σa)
-Pion 	= h->metric.P(h,h0i,σi)
-	
-pfx  = "td"
-	
-#---------------------------------------------------------------------------------------;
+δ1	= 0.001                 # Atmospheric perturbation parameter
+δ2	= 0.10                  # Ionospheric perturbation parameter
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100))) # Filename str.
 
-δ1	= 0.001
-δ2	= 0.10
-gp 	= x->metric.gp(x,δ1,δ2,Patm,Pion)
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
+tdLtup	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+tdL     = squirrel.seval.tup2td( tdLtup )
 
-tdL 	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+lfact   = mfact                         # Choose conversion factors
+unitstr = "m"                           # Unit string
 
-lfact   = mfact
+thresh = (20,20,20)                             # Threshold tuples 
 
-thresh = (20,20,20)
+h   = lfact*sort(tdL.erh,rev=true)              # horizontal errors
+v   = lfact*sort(tdL.erv,rev=true)              # vertical errors
+e   = lfact*sort(tdL.err,rev=true)              # total error
 
-h   = lfact*sort(tdL.erh,rev=true)
-v   = lfact*sort(tdL.erv,rev=true)
-e   = lfact*sort(tdL.err,rev=true)
+pf = dir*pfx*"-"*Ns*"-"*sfx*sufx                # Filename string
 
-pf = dir*pfx*"-"*Ns*"-"*sfx*sufx
+ers = PrintErr( h , v , e , thresh , pf , unitstr )     # Error string
 
-ers = PrintErr( h , v , e , thresh , pf , "m" )
+binwidth = 0.05                                 # Histogram bin width
+histL    = 0.0                                  # Histogram lower limit
+histU    = 50.0                                 # Histogram upper limit
 
-histpar  = (0.05,0.0,50)
-xrange   = (0,10)
-yrange   = (0,15000)
-labelsh  = ("Horizontal error (m)","Number of test cases")
-labelsv  = ("Vertical error (m)","Number of test cases")
+xrange   = (0,10)               # x range for histogram plot 
+yrange   = (0,15000)            # y range for histogram plot 
 
-PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh 
-        , dir*"plotHerr-"*sfx*".pdf" )
-PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv 
-        , dir*"plotVerr-"*sfx*".pdf" )
+histpar  = (binwidth,histL,histU)
+labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
+labelsv  = ("Vertical error ("*unitstr*")","Number of test cases")
 
-#---------------------------------------------------------------------------------------;
+PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh ,
+         dir*"plotHerr-"*sfx*".pdf" )
+PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv ,
+         dir*"plotVerr-"*sfx*".pdf" )
 
-δ1	= 0.001
-δ2	= 0.01
-gp 	= x->metric.gp(x,δ1,δ2)
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
+#-----------------------------------------------------------------------
 
-tdS 	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+δ1	= 0.001                 # Atmospheric perturbation parameter
+δ2	= 0.01                  # Ionospheric perturbation parameter
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100))) # Filename str.
 
-lfact   = cmfact
+tdStup	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+tdS     = squirrel.seval.tup2td( tdStup )
 
-thresh = (200,200,200)
+lfact   = cmfact                        # Choose conversion factors
+unitstr = "cm"                          # Unit string
 
-h   = lfact*sort(tdS.erh,rev=true)
-v   = lfact*sort(tdS.erv,rev=true)
-e   = lfact*sort(tdS.err,rev=true)
+thresh = (20,20,20)                          # Threshold tuples 
 
-pf = dir*pfx*"-"*Ns*"-"*sfx*sufx
+h   = lfact*sort(tdS.erh,rev=true)              # horizontal errors
+v   = lfact*sort(tdS.erv,rev=true)              # vertical errors
+e   = lfact*sort(tdS.err,rev=true)              # total error
 
-ers = PrintErr( h , v , e , thresh , pf , "cm" )
+pf = dir*pfx*"-"*Ns*"-"*sfx*sufx                # Filename string
 
-histpar  = (0.5,0.0,500)
-xrange   = (0,100)
-yrange   = (0,15000)
-labelsh  = ("Horizontal error (cm)","Number of test cases")
-labelsv  = ("Vertical error (cm)","Number of test cases")
+ers = PrintErr( h , v , e , thresh , pf , unitstr )     # Error string
 
-PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh 
-        , dir*"plotHerr-"*sfx*".pdf" )
-PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv 
-        , dir*"plotVerr-"*sfx*".pdf" )
+binwidth = 0.5                                  # Histogram bin width
+histL    = 0.0                                  # Histogram lower limit
+histU    = 500.0                                # Histogram upper limit
 
-#---------------------------------------------------------------------------------------;
+xrange   = (0,100)              # x range for histogram plot 
+yrange   = (0,15000)            # y range for histogram plot 
+
+histpar  = (binwidth,histL,histU)
+labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
+labelsv  = ("Vertical error ("*unitstr*")","Number of test cases")
+
+PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh ,
+         dir*"plotHerr-"*sfx*".pdf" )
+PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv ,
+         dir*"plotVerr-"*sfx*".pdf" )
+
+#-----------------------------------------------------------------------
 
 sfx	= "n"*string(ne)*"p0"
 
-td0 	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+td0tup 	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+td0     = squirrel.seval.tup2td( td0tup )
 
-lfact   = mmfact
+lfact   = mmfact                        # Choose conversion factors
+unitstr = "mm"                          # Unit string
 
-thresh = (30,30,30)
+thresh = (20,20,20)                             # Threshold tuples 
 
-h   = lfact*sort(td0.erh,rev=true)
-v   = lfact*sort(td0.erv,rev=true)
-e   = lfact*sort(td0.err,rev=true)
+h   = lfact*sort(td0.erh,rev=true)              # horizontal errors
+v   = lfact*sort(td0.erv,rev=true)              # vertical errors
+e   = lfact*sort(td0.err,rev=true)              # total error
 
-pf = dir*pfx*"-"*Ns*"-"*sfx*sufx
+pf = dir*pfx*"-"*Ns*"-"*sfx*sufx                # Filename string
 
-ers = PrintErr( h , v , e , thresh , pf , "mm" )
+ers = PrintErr( h , v , e , thresh , pf , unitstr )     # Error string
 
-histpar  = (0.01,0.0,1000)
-xrange   = (0,2)
-yrange   = (0,20000)
-labelsh  = ("Horizontal error (cm)","Number of test cases")
-labelsv  = ("Vertical error (cm)","Number of test cases")
+binwidth = 0.01                                 # Histogram bin width
+histL    = 0.0                                  # Histogram lower limit
+histU    = 10.0                                 # Histogram upper limit
 
-PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh 
-        , dir*"plotHerr-"*sfx*".pdf" )
-PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv 
-        , dir*"plotVerr-"*sfx*".pdf" )
+xrange   = (0,2)                # x range for histogram plot 
+yrange   = (0,20000)            # y range for histogram plot 
 
+histpar  = (binwidth,histL,histU)
+labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
+labelsv  = ("Vertical error ("*unitstr*")","Number of test cases")
 
-#---------------------------------------------------------------------------------------;
+PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh ,
+         dir*"plotHerr-"*sfx*".pdf" )
+PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv ,
+         dir*"plotVerr-"*sfx*".pdf" )
 
-pfx  = "tck"
+#-----------------------------------------------------------------------
 
 sfx	= "n"*string(ne)*"k"
 
-tdk = Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+tdktup  = Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
+tdk     = squirrel.seval.tup2td( tdktup )
 
-lfact   = mmfact
+lfact   = mmfact                        # Choose conversion factors
+unitstr = "mm"                          # Unit string
 
-thresh = (20,20,20)
+thresh = (20,20,20)                             # Threshold tuples 
 
-h   = lfact*sort(tdk.erh,rev=true)
-v   = lfact*sort(tdk.erv,rev=true)
-e   = lfact*sort(tdk.err,rev=true)
+h   = lfact*sort(tdk.erh,rev=true)              # horizontal errors
+v   = lfact*sort(tdk.erv,rev=true)              # vertical errors
+e   = lfact*sort(tdk.err,rev=true)              # total error
 
-hC  = cmfact*sort(tdk.erhC,rev=true)
-vC  = cmfact*sort(tdk.ervC,rev=true)
-eC  = cmfact*sort(tdk.errC,rev=true)
+pf = dir*pfx*"-"*Ns*"-"*sfx*sufx                # Filename string
 
-pf = dir*pfx*"-"*Ns*"-"*sfx*sufx
+ers = PrintErr( h , v , e , thresh , pf , unitstr )     # Error string
 
-ers = PrintErr( h , v , e , thresh , pf , "mm" )
-ersC = PrintErr( hC , vC , eC , thresh , pf*"C" , "cm" )
+binwidth = 0.0025                               # Histogram bin width
+histL    = 0.0                                  # Histogram lower limit
+histU    = 5.0                                # Histogram upper limit
 
-histpar  = (0.0025,0.0,100)
-xrange   = (0,0.5)
-yrange   = (0,30000)
-labelsh  = ("Horizontal error (mm)","Number of test cases")
-labelsv  = ("Vertical error (mm)","Number of test cases")
+xrange   = (0,0.5)              # x range for histogram plot 
+yrange   = (0,30000)            # y range for histogram plot 
+
+histpar  = (binwidth,histL,histU)
+labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
+labelsv  = ("Vertical error ("*unitstr*")","Number of test cases")
 
 PlotErr( h , (ers[1],ers[4]) , histpar , xrange , yrange , labelsh 
         , dir*"plotHerr-"*sfx*".pdf" )
 PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv 
         , dir*"plotVerr-"*sfx*".pdf" )
 
-histpar  = (0.0025,0.0,100)
-xrange   = (0,0.5)
-yrange   = (0,30000)
-labelsh  = ("Horizontal error (cm)","Number of test cases")
-labelsv  = ("Vertical error (cm)","Number of test cases")
+pfC = pf*"C"
 
-PlotErr( h , (ersC[1],ersC[4]) , histpar , xrange , yrange , labelsh 
-        , dir*"plotHerr-"*sfx*"C.pdf" )
-PlotErr( v , (ersC[2],ersC[5]) , histpar , xrange , yrange , labelsv 
-        , dir*"plotVerr-"*sfx*"C.pdf" )
+lfactC   = cmfact                       # Choose conversion factors
+unitstrC = "cm"                         # Unit string
 
-#---------------------------------------------------------------------------------------;
+threshC = (2,5,20)                            # Threshold tuples 
 
+hC  = lfactC*sort(tdk.erhC,rev=true)            # horizontal errors
+vC  = lfactC*sort(tdk.ervC,rev=true)            # vertical errors
+eC  = lfactC*sort(tdk.errC,rev=true)            # total errors
 
+ersC = PrintErr( hC , vC , eC , threshC , pfC , unitstrC )  # Error str
+
+labelsh  = ("Horizontal error ("*unitstrC*")","Number of test cases")
+labelsv  = ("Vertical error ("*unitstrC*")","Number of test cases")
+
+binwidth = 0.00025                              # Histogram bin width
+histpar  = (binwidth,histL,histU)
+xrange   = (0,0.05)             # x range for histogram plot 
+yrange   = (0,20000)            # y range for histogram plot 
+PlotErr( hC , (ersC[1],ersC[4]) , histpar , xrange , yrange , labelsh ,
+         dir*"plotHerr-"*sfx*"C.pdf" )
+
+binwidth = 0.02                              # Histogram bin width
+histpar  = (binwidth,histL,histU)
+xrange   = (0,4)               # x range for histogram plot 
+yrange   = (0,4000)            # y range for histogram plot 
+PlotErr( vC , (ersC[2],ersC[5]) , histpar , xrange , yrange , labelsv ,
+         dir*"plotVerr-"*sfx*"C.pdf" )
+
+#-----------------------------------------------------------------------

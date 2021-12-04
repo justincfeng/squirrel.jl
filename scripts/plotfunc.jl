@@ -1,7 +1,9 @@
-#---------------------------------------------------------------------------------------;
+#-----------------------------------------------------------------------
+rms=x->sqrt(dot(x,x)/length(x))            # Root Mean Square calculator
 
-function PrintErr(  h::RealVec , v::RealVec  , e::RealVec , thresh::Tuple , pf::String ,
-                    units::String    )
+#-----------------------------------------------------------------------
+function PrintErr(  h::RealVec , v::RealVec  , e::RealVec , 
+                    thresh::Tuple , pf::String , units::String )
     hrms = rms(h)
     vrms = rms(v)
     erms = rms(e)
@@ -17,27 +19,41 @@ function PrintErr(  h::RealVec , v::RealVec  , e::RealVec , thresh::Tuple , pf::
     ecthr = count(x->x>thresh[3], e)
 
     open(pf*"-res.txt","a") do io
-        println(io,"hrms=","\t",hrms,"\t","# Horizontal error rms (",units,")")
-        println(io,"vrms=","\t",vrms,"\t","# Vertical error rms (",units,")")
-        println(io,"erms=","\t",erms,"\t","# Full error rms (",units,")")
-        println(io,"h95=","\t",h95,"\t","# Horizontal error 95% CL (",units,")")
-        println(io,"v95=","\t",v95,"\t","# Vertical error 95% CL (",units,")")
-        println(io,"e95=","\t",e95,"\t","# Full error 95% CL (",units,")")
-        println(io,"hcthr=","\t",hcthr,"\t","# Horizontal errors above threshold of ",
-                thresh[1]," ",units)
-        println(io,"vcthr=","\t",vcthr,"\t","# Vertical errors above threshold of ",
-                thresh[2]," ",units)
-        println(io,"ecthr=","\t",ecthr,"\t","# Full errors above threshold of ",
-                thresh[3]," ",units)
+        println(io,"hrms =","\t",hrms,"\t",
+                "# Horizontal error rms (",units,")")
+        println(io,"vrms =","\t",vrms,"\t",
+                "# Vertical error rms (",units,")")
+        println(io,"erms =","\t",erms,"\t",
+                "# Full error rms (",units,")")
+        println(io,"h95 =","\t",h95,"\t",
+                "# Horizontal error 95% CL (",units,")")
+        println(io,"v95 =","\t",v95,"\t",
+                "# Vertical error 95% CL (",units,")")
+        println(io,"e95 =","\t",e95,"\t",
+                "# Full error 95% CL (",units,")")
+        println(io,"hcthr =","\t",hcthr,"\t",
+                "# Horizontal errors above threshold of ",thresh[1]," ",
+                units)
+        println(io,"vcthr =","\t",vcthr,"\t",
+                "# Vertical errors above threshold of ",thresh[2]," ",
+                units)
+        println(io,"ecthr =","\t",ecthr,"\t",
+                "# Full errors above threshold of ",thresh[3]," ",units)
+        println(io,"hmax =","\t",h[1],"\t",
+                "# Largest horizontal error (",units,")")
+        println(io,"vmax =","\t",v[1],"\t",
+                "# Largest vertical error (",units,")")
+        println(io,"emax =","\t",e[1],"\t",
+                "# Largest total error (",units,")")
     end
 
     return (hrms,vrms,erms,h95,v95,e95,hcthr,vcthr,ecthr)
-end
+end     #---------------------------------------------------------------
 
-#---------------------------------------------------------------------------------------;
-
-function PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple , xr::Tuple , yr::Tuple 
-                    , labels::Tuple ,plotname::String )
+#-----------------------------------------------------------------------
+function PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple , 
+                    xr::Tuple , yr::Tuple , labels::Tuple , 
+                    plotname::String )
     plot!(vline([lines[1],lines[2]]))
     histogram!(
         err ,
@@ -51,5 +67,5 @@ function PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple , xr::Tuple , 
         fontfamily="Times"
     )
     savefig(plotname)
-end
+end     #---------------------------------------------------------------
 
