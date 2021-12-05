@@ -6,8 +6,7 @@ using LinearAlgebra , Statistics, Combinatorics, ForwardDiff
 using DoubleFloats
 
 include("type.jl")
-include("metrics/WeakFieldIso.jl")
-include("metrics/Minkowski.jl")
+include("metric.jl")
 include("srl/FHC21.jl")
 include("srl/RTC21.jl")
 include("srl/mloc.jl")
@@ -24,13 +23,13 @@ include("geosol.jl")
 The TestCases datatype may be populated by the associated function of
 the form:
 
-    TestCases( par::NTuple , N::Int , np::Int , X::Array{RealMtx,1} , Xtar::Array{RealVec,1} )
+    TestCases( par::NTuple , N::Int , ne::Int , X::Array{RealMtx,1} , Xtar::Array{RealVec,1} )
 
 The variables are defined in the following way:
 
     par     ::  NTuple              # Parameter tuple
     N       ::  Int                 # Number of generated test cases
-    np      ::  Int                 # Number of emission points
+    ne      ::  Int                 # Number of emission points
     X       ::  Array{RealMtx,1}    # Emission points
     Xtar    ::  Array{RealVec,1}    # Target point
 
@@ -38,7 +37,7 @@ The variables are defined in the following way:
 struct TestCases                                    # TestCases datatype
     par     ::  NTuple              # Parameter tuple
     N       ::  Int                 # Number of cases
-    np      ::  Int                 # Number of emission points
+    ne      ::  Int                 # Number of emission points
     X       ::  Array{RealMtx,1}    # Emission points
     Xtar    ::  Array{RealVec,1}    # Target point
 end     #---------------------------------------------------------------
@@ -118,8 +117,8 @@ The `tcfl` function changes the floating point type of `tc` to `tpfl`.
 function tcfl( tc::TestCases , tpfl::DataType=Float64 )
     par2    = tpfl.(tc.par)
     N       = tc.N
-    np      = tc.np
-    X2      = [zeros(tpfl,4,np) for _ in 1:N]
+    ne      = tc.ne
+    X2      = [zeros(tpfl,4,ne) for _ in 1:N]
     Xtar2   = [zeros(tpfl,4) for _ in 1:N]
 
     for i=1:N 
@@ -127,7 +126,7 @@ function tcfl( tc::TestCases , tpfl::DataType=Float64 )
         Xtar2[i]  = tpfl.(tc.Xtar[i])
     end
 
-    return TestCases( par2 , N , np , X2 , Xtar2 )
+    return TestCases( par2 , N , ne , X2 , Xtar2 )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -139,7 +138,7 @@ a tuple.
 
 """
 function tc2tup( tc::TestCases )
-    return ( tc.par , tc.N , tc.np , tc.X , tc.Xtar )
+    return ( tc.par , tc.N , tc.ne , tc.X , tc.Xtar )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -257,14 +256,14 @@ are spacelike separated with respect to the Minkowski metric `η_{μν}`.
 """
 function slchk( X::RealMtx )
     tpfl = typeof(X[1])
-    np = size(X)[2]
+    ne = size(X)[2]
 
-    if np == 1
+    if ne == 1
         return true
-    elseif np > 1
-        Z = [zeros(tpfl,4) for _ in 1:np]
+    elseif ne > 1
+        Z = [zeros(tpfl,4) for _ in 1:ne]
 
-        for i=1:np
+        for i=1:ne
             Z[i] = X[:,i]
         end
 
@@ -399,33 +398,33 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    pgen( Rs::Real , gfunc::Function , tol::Real , np::Int=4 , 
+    pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
           Δψ::Real=Δψ0 )
 
-The `pgen` function generates a target point `Xtar` and `np` emission
-points in a `4×np` matrix `X` such that the points in `X` lie on the
+The `pgen` function generates a target point `Xtar` and `ne` emission
+points in a `4×ne` matrix `X` such that the points in `X` lie on the
 past light cone of `Xtar` with respect to the metric `gfunc`, and have
 spatial radii values of `~Rs` (defined with respect to spatial origin).
 The parameter `tol` is the tolerance parameter for the integration. This
 function returns the tuple `(X,Xtar)`.
 
 """
-function pgen( Rs::Real , gfunc::Function , tol::Real , np::Int=4 , 
+function pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
                Δψ::Real=Δψ0 )
     tpfl=typeof(Rs)
 
-    Z   = zeros(tpfl,8,np)
-    Zi  = zeros(tpfl,8,np)
+    Z   = zeros(tpfl,8,ne)
+    Zi  = zeros(tpfl,8,ne)
 
-    X   = zeros(tpfl,4,np)
+    X   = zeros(tpfl,4,ne)
 
     Xc  = zeros(tpfl,4,4)
 
     xi  = x3gen(tpfl)
-    vi  = zeros(tpfl,3,np)
-    λi  = zeros(tpfl,np)
+    vi  = zeros(tpfl,3,ne)
+    λi  = zeros(tpfl,ne)
 
-    for i=1:np
+    for i=1:ne
         B = true
         while B
             vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
@@ -463,7 +462,7 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    gen( N::Int , g::Function , np::Int=4 , Δψ::Real=Δψ0 
+    gen( N::Int , g::Function , ne::Int=4 , Δψ::Real=Δψ0 
               , tpfl::DataType=Float64 
               , REs ::  Real=1.4365276211950395e9       # Earth radius
               , RR  ::  Real=1.4365277e9    # Just above Earth surface
@@ -477,7 +476,7 @@ emission points `X` with respect to the metric `gfunc`. This function
 returns a quantity of the TestCases datatype.
 
 """
-function gen( N::Int , g::Function , np::Int=4 , Δψ::Real=Δψ0 
+function gen( N::Int , g::Function , ne::Int=4 , Δψ::Real=Δψ0 
               , tpfl::DataType=Float64 
               , REs ::  Real=1.4365276211950395e9       # Earth radius
               , RR  ::  Real=1.4365277e9    # Just above Earth surface
@@ -488,11 +487,11 @@ function gen( N::Int , g::Function , np::Int=4 , Δψ::Real=Δψ0
 
 par = (REs,RR,Rs,tolh,tol)
 
-tc = TestCases(  par , N , np , [zeros(tpfl,4,np) for _ in 1:N]    
+tc = TestCases(  par , N , ne , [zeros(tpfl,4,ne) for _ in 1:N]    
                         , [zeros(tpfl,4) for _ in 1:N] )
 
 for i=1:N 
-    ZZ          = pgen( Rs , g , tolh , np , Δψ )
+    ZZ          = pgen( Rs , g , tolh , ne , Δψ )
     tc.X[i]     = ZZ[1]
     tc.Xtar[i]  = ZZ[2]
     print("\r$i")
@@ -581,7 +580,7 @@ N   = tc2.N
 else
 N   = Nx
 end
-np      = tc2.np
+np      = tc2.ne
 
 nc      = binomial(np,4)
 

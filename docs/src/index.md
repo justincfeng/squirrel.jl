@@ -12,12 +12,14 @@ relativistic location problem in slightly curved spacetime geometries.
 
 ## Short tutorial
 
+### Positioning example
 
-### Other methods
 
 
 ### Evaluation
 
+Scripts are provided for evaluating the accuracy and performance of the
+functions in `squirrel.jl`. To evaluate the  
 
 ## References
 

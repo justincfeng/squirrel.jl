@@ -13,7 +13,7 @@ tcR =  squirrel.seval.TestCases(  par , N , np , X , Xtar )
 
 @test tcR.par   == par
 @test tcR.N     == N
-@test tcR.np    == np
+@test tcR.ne    == np
 @test tcR.X     == X
 @test tcR.Xtar  == Xtar
 
@@ -71,7 +71,7 @@ tcRD = squirrel.seval.tcfl( tcR , Double64 )
 tcT = squirrel.seval.tc2tup( tcR )
 
 @test tcT == (par,N,np,X,Xtar)
-@test tcT == (tcR.par,tcR.N,tcR.np,tcR.X,tcR.Xtar)
+@test tcT == (tcR.par,tcR.N,tcR.ne,tcR.X,tcR.Xtar)
 
 tdT = squirrel.seval.td2tup( tdR )
 
