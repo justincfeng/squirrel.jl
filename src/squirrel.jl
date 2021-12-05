@@ -11,6 +11,7 @@ include("geosol.jl")
 include("broyden.jl")
 include("outlier.jl")
 
+include("metric.jl")
 include("metrics/Minkowski.jl")
 include("srl/FHC21.jl")
 include("srl/RTC21.jl")

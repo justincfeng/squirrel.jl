@@ -6,7 +6,8 @@ using LinearAlgebra , Statistics, Combinatorics, ForwardDiff
 using DoubleFloats
 
 include("type.jl")
-include("metric.jl")
+include("metrics/WeakFieldIso.jl")
+include("metrics/Minkowski.jl")
 include("srl/FHC21.jl")
 include("srl/RTC21.jl")
 include("srl/mloc.jl")
