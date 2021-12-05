@@ -96,4 +96,3 @@ datatype TestData.
 ```@docs
 squirrel.seval.main
 ```
-
