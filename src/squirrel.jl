@@ -240,7 +240,9 @@ function locator(  X::RealMtx , gfunc::Function , δ::Real ,
 
     l = size(X)
 
-    if  l[2] < 4 || ne < 4
+    if gfunc == x->ημν(x)
+        return mlocator( tpflc.(Y) )
+    elseif  l[2] < 4 || ne < 4
         print("Need more than four emission points.")
         return zeros(tpfl,4)
     elseif l[2] == 4 || ne == 4 

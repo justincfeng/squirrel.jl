@@ -7,6 +7,7 @@ X   = rand(4)
 v       = zeros(4)
 v[2:4]  = rand(3)
 vnorm  = ηdot(v,v)
+
 nvf = nullenforcerf( v , X , η )
 nvp = nullenforcerp( v , X , η )
 

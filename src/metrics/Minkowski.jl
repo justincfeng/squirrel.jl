@@ -23,6 +23,33 @@ function ηdot( V1::RealVec , V2::RealVec )  # Computes Minkowski product
 end       #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+Minkowski norm
+
+    mnorm( V ) 
+
+The function `mnorm` computes the Minkowski norm, which is mathematically
+equivalent to the absolute value of the square root of the Minkowski
+product ``√|η(V_1,V_2)|``. However, this function computes the result
+according to the formula used in the hypot function.
+
+"""
+function mnorm( V )
+    l = length(V)
+
+    t = abs(V[1])
+    x = norm(V[2:l])
+
+    if t > x
+        return abs(t - ( x/t )*( x / ( 1 + √( 1 - (x/t)^2 ) ) ))
+    elseif x > t
+        return abs(x - ( t/x )*( t / ( 1 + √( 1 - (t/x)^2 ) ) ))
+    else
+        return zero( typeof(V[1]) )
+    end
+end      #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
 #   THE MINKOWSKI METRIC (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
 function ημν( tpfl::DataType=Float64 , dim::Int=4 )
@@ -30,7 +57,7 @@ function ημν( tpfl::DataType=Float64 , dim::Int=4 )
 
     gη[1,1] = -gη[1,1]
 
-    return gη
+    return Matrix(gη)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------

@@ -161,8 +161,8 @@ end     #---------------------------------------------------------------
 """
     tup2tc( tctup::Tuple )
 
-The `tc2tup` function changes `tc` from an object of type `TestCases` to 
-a tuple.
+The `tc2tup` function changes `tctup` from a Tuple to an object of type 
+`TestCases`.
 
 """
 function tup2tc( tctup::Tuple )
@@ -173,8 +173,8 @@ end     #---------------------------------------------------------------
 """
     tup2td( tdtup::Tuple )
 
-The `td2tup` function changes `td` from an object of type `TestData` to 
-a tuple.
+The `td2tup` function changes `tdtuple` from a Tuple to an object of 
+type `TestData`.
 
 """
 function tup2td( tdtup::Tuple )
