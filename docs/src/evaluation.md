@@ -60,7 +60,9 @@ squirrel.seval.tup2tc
 squirrel.seval.tup2td
 ```
 
-In some cases, one may wish to change to a higher precision floating point type for the generated samples. For this purpose, the following function is provided:
+In some cases, one may wish to change to a higher precision floating
+point type for the generated samples. For this purpose, the following
+function is provided:
 
 ```@docs
 squirrel.seval.tcfl

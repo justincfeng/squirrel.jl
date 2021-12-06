@@ -25,7 +25,8 @@ and ``r`` is implicitly defined by:
 
 ## Weak field metric
 
-For solar system and terrestrial positioning, the weak field metric suffices. The weak field metric has the form:
+For solar system and terrestrial positioning, the weak field metric
+suffices. The weak field metric has the form:
 
 ```math
 g_{\mu \nu} = \eta_{\mu \nu} - 2 \, V \, \delta_{\mu \nu},
@@ -35,8 +36,11 @@ where ``V`` is the gravitational potential.
 
 ## Gordon metric
 
-To incorporate atmospheric and ionospheric effects, one uses the analogue Gordon metric, which takes the form (with ``g_{\mu \nu}`` being the gravitational metric):
+To incorporate atmospheric and ionospheric effects, one uses the
+analogue Gordon metric, which takes the form (with ``g_{\mu \nu}`` being
+the gravitational metric):
 
 ```math
-    \bar{g}_{\mu \nu} = g_{\mu \nu} + \left(1-\frac{1}{n^2}\right) u_\mu u_\nu ,
+    \bar{g}_{\mu \nu} = g_{\mu \nu} + 
+    \left(1-\frac{1}{n^2}\right) u_\mu u_\nu ,
 ```

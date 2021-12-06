@@ -1,9 +1,9 @@
 # Geodesic solver
 
-## Null Geodesics
+## Null Geodesics: Hamilton's equations
 
 Null geodesics in a spacetime geometry described by a metric ``g_{μν}``
-are described by the Hamiltonian:
+may be described by the Hamiltonian:
 
 ```math
 H = \frac{1}{2} g^{μν} p_μ p_ν
@@ -50,13 +50,15 @@ squirrel.HamGeo
 ```
 
 ### Hamilton's equations
-Hamilton's equations may be written in terms of the phase space coordinate ``z^α``, where ``z=(x,p)``.
+Hamilton's equations may be written in terms of the phase space
+coordinate ``z^α``, where ``z=(x,p)``.
 
 ```math
 \frac{dz^α}{dλ} = J^{αβ} \frac{∂H}{∂z^β}.
 ```
 
-where ``J^{αβ}`` is the symplectic matrix, which has the block matrix form:
+where ``J^{αβ}`` is the symplectic matrix, which has the block matrix
+form:
 
 ```math
 J =
@@ -69,14 +71,15 @@ J =
 ```
 
 where ``O`` is a ``4×4`` matrix of zeros and ``I`` is the identity
-matrix. The symplectic matrix is implemented as an operator acting on
-a vector ``{∂H}/{∂z^β}``:
+matrix. The symplectic matrix is implemented as an operator acting on a
+vector ``{∂H}/{∂z^β}``:
 
 ```@docs
 squirrel.Jsympl
 ```
 
-The quantity ``J^{αβ} \frac{∂H}{∂z^β}`` is evaluated in the following function: 
+The quantity ``J^{αβ} \frac{∂H}{∂z^β}`` is evaluated in the following
+function: 
 
 ```@docs
 squirrel.ZdotGeo
@@ -86,7 +89,8 @@ The symplectic operator
 
 ## Geodesic solver function
 
-Geodesics are solved with the following function, which outputs the endpoint (``λ=1``) of the solution to Hamilton's equations:
+Geodesics are solved with the following function, which outputs the
+endpoint (``λ=1``) of the solution to Hamilton's equations:
 
 ```@docs
 squirrel.solveZ
