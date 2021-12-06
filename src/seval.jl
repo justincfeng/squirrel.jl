@@ -230,8 +230,8 @@ end     #---------------------------------------------------------------
 """
     angmar( θ::Real , Δψ::Real )
 
-The `angmar` function checks whether the angle `θ` falls in the range 
-`0<θ<π/2 - |Δψ|`.
+The `angmar` function checks whether the angle ``θ``` falls in the range 
+``0<θ<π/2 - |Δψ|``.
 
 """
 function angmar( θ::Real , Δψ::Real )
@@ -251,8 +251,9 @@ end     #---------------------------------------------------------------
 """
     slchk( X::RealMtx )
 
-The `slchk` function checks whether the emission points in the matrix `X`
-are spacelike separated with respect to the Minkowski metric `η_{μν}`.
+The `slchk` function checks whether the emission points in the matrix
+``X`` are spacelike separated with respect to the Minkowski metric
+``η_{μν}``.
 
 """
 function slchk( X::RealMtx )
@@ -300,7 +301,7 @@ end     #---------------------------------------------------------------
     vrgen( scale::Real , Δψ::Real , u::RealVec=Float64[1;0;0] )
 
 The `vrgen` function generates a vector of length `scale` which makes
-an angle `θ<π/2-|ΔΨ|`.
+an angle ``θ<π/2-|ΔΨ|``.
 
 """
 function vrgen( scale::Real , Δψ::Real , u::RealVec=Float64[1;0;0] )

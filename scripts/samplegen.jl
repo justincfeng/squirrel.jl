@@ -10,8 +10,7 @@ include("../src/metric.jl")
 g  	= metric.g
 gk 	= metric.ge
 
-Nsamp   = 10
-# N	= 100000
+Nsamp   = 1000
 
 nb	= 24
 tol	= 1e-14

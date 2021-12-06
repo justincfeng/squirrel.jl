@@ -103,7 +103,43 @@ range.
 ### Evaluation
 
 Scripts are provided for a more comprehensive evaluation of the accuracy
-and performance of the functions in `squirrel.jl`.
+and performance of the functions in `squirrel.jl`. To find the scripts
+directory, run the command:
+
+    julia> pathscript = dirname(dirname(pathof(squirrel)))*"/scripts/"
+
+which should return a string with the path to the scripts directory.
+Before running the scripts, one should make the following directory
+(this will throw an error if a directory already exists):
+
+    julia> mkdir(dirname(dirname(pathof(squirrel)))*"/res/")
+
+To generate the samples, one should run the `samplegen.jl` script:
+
+    julia> include(pathscript*"samplegen.jl")
+
+This will generate 1000 samples. Once the samples have been generated,
+run the evaluation script:
+
+    julia> include(pathscript*"evaluation.jl")
+
+which will evaluate the locator functions in `squirrel.jl` for 1000 test
+cases, and for the terrestrial positioning problem in four geometries:
+the Kerr-Schild metric, the Gordon metric for an analogue Gordon metric
+modeling atmospheric and ionospheric effects and two perturbed Gordon
+metrics corresponding to fractional uncertainties of up ``1\%``  to
+``10\%`` in the ionospheric electron density (and a ``0.1\%``
+uncertainty in the atmospheric index of refraction). 
+
+It is recommended that `evaluation.jl` is run with multiple threads. One
+can do it by running julia with the command:
+
+    julia --threads 4
+
+If one wishes to change the parameters of the sample generation and
+evaluation scripts, one should make a copy of the repository, make
+changes to the files in the `scripts` folder of the repository. One may
+then run the edited scripts in the `scripts` folder.
 
 ## References
 

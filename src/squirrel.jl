@@ -239,9 +239,10 @@ end     #---------------------------------------------------------------
     locator( X::RealMtx , gfunc::Function , δ::Real , nb::Int=24 , tpflc::DataType=Double64 , outthresh::Real=1e1 , ne::Int=5 )
 
 The function `locator` computes the intersection point from a set of
-`ne>4` emission points `X` by applying `locator4` to all combinations of
-`4` points out of `ne` in `X`. A basic outlier detection algorithm
-(implemented in the function `odetc`) is applied to reduce errors.
+``n_e>4``` emission points ``X`` by applying `locator4` to all
+combinations of ``4`` points out of ``n_e`` in ``X```. A basic outlier
+detection algorithm (implemented in the function `odetc`) is applied to
+reduce errors.
 
 """
 function locator(  X::RealMtx , gfunc::Function , δ::Real ,

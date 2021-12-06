@@ -182,7 +182,7 @@ exclude large errors (the assumption here is that the large errors are
 infreqent):
 
 ```@docs
-squirrel.odet
+squirrel.odetc
 ```
 
 The following function implements the procedure described above, given a matrix of ``4×n_e`` emission points ``X``:

@@ -12,8 +12,8 @@ include("../src/metric.jl")
 g  	= metric.g          # Gordon metric with standard parameters
 gk 	= metric.ge         # Kerr-Schild with Earth parameters
 
-Neval	= 10            # Number of test cases to evaluate
-Nsamp	= 10            # Number of test cases in generated sample file
+Neval	= 1000          # Number of test cases to evaluate
+Nsamp	= 1000          # Number of test cases in generated sample file
 
 nb      = 24            # Number of steps for Broyden solver
 tol	    = 1e-10         # Tolerance for ODE solver (OrdinaryDiffEq.jl)
@@ -48,7 +48,7 @@ tctk	= Serialization.deserialize(tckloc) ;
 tck	 = squirrel.seval.tup2tc( tctk ) ;
 
 #-----------------------------------------------------------------------
-ne	= 6     # Number of emission points to consider
+ne	= 5     # Number of emission points to consider
 #-----------------------------------------------------------------------
 
 # The following are parameters for the perturbation model
@@ -109,71 +109,11 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0tup)
 	
 #-----------------------------------------------------------------------
 
-tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,
+                          ne)
 	
 sfx	= "n"*string(ne)*"k"
 
-tdktup = squirrel.seval.td2tup( tdk )
-
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdktup)
-
-#-----------------------------------------------------------------------
-ne	= 5     # Number of emission points to consider
-#-----------------------------------------------------------------------
-	
-tpfl =Float64
-	
-h0a  = tpfl[  0  ;  4  ;  8  ;  12  ;  16  ]
-σa   = tpfl[  2  ; 1.5 ; 1.8 ;  1.7 ;  1.5 ]
-h0i  = tpfl[  150  ;  200  ;  250  ;  300  ;  350  ]
-σi   = tpfl[  21   ;  15   ;  18   ;  21   ;  10   ]
-	
-pfx  = "td"
-	
-#-----------------------------------------------------------------------
-	
-δ1	= 0.001
-δ2	= 0.10
-Patm 	= h->metric.P(h,h0a,σa)
-Pion 	= h->metric.P(h,h0i,σi)
-gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
-tdL 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
-	
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
-
-tdLtup = squirrel.seval.td2tup( tdL )
-	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdLtup)
-	
-#-----------------------------------------------------------------------
-	
-δ1	= 0.001
-δ2	= 0.01
-gp 	= x->metric.gp(x,δ1,δ2)
-tdS 	= squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
-	
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
-	
-tdStup = squirrel.seval.td2tup( tdS )
-	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdStup)
-	
-#-----------------------------------------------------------------------
-	
-td0 	= squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
-	
-sfx	= "n"*string(ne)*"p0"
-	
-td0tup = squirrel.seval.td2tup( td0 )
-	
-Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0tup)
-	
-#-----------------------------------------------------------------------
-	
-tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,ne)
-	
-sfx	= "n"*string(ne)*"k"
-	
 tdktup = squirrel.seval.td2tup( tdk )
 
 Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdktup)
