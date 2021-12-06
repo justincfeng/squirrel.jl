@@ -21,9 +21,10 @@ denotes the spatial components of the initial four-velocity vector for
 the null geodesic (the time component is determined by the requirement
 that the four-velocity is null). 
 
-Given a collection of four geodesic functions ``\\{x_1,x_2,x_3,x_4\\}``,
-the condition that they intersect is the vanishing of the following
-vector-valued function:
+Given a collection of four geodesic functions ``\\{x_1,x_2,x_3,x_4\\}``
+(each having the form ``x^μ_I=x^μ_I(λ,{x}_0,{\bf v})``), the condition
+that they intersect is the vanishing of the following vector-valued
+function:
 
 ```math
 f := \left( x_1 - x_2 , x_1 - x_3 , x_1 - x_4 \right)
@@ -40,18 +41,30 @@ The squirrel algorithm is then summarized:
 
 2.  Apply a root finding algorithm to the function `f`.
 
-## Geodesic endpoints and Jacobian
+A quasi-Newton Broyden algorithm (which will be described in detail
+below) is employed to do the root-finding; in such a method, the
+Jacobian for `f` is computed once in the first iteration of the root
+finding algorithm, and is updated in the subsequent iterations. The
+function `f` is computed by way of numerical integration of geodesics;
+if the numerical integration is performed using native Julia libraries,
+one can compute the Jacobian by way of automatic differentiation.
 
-To find the roots of the function `f`, the squirrel algorithm first
-computes the Jacobian of `f`.
+## Geodesic endpoint function
+
+To compute the function `f`, the geodesic endpoint function ``x^μ_I=x^μ_I(λ,X_I,{\bf v})|_{λ=0}`` is implemented as:
 
 ```@docs
 squirrel.gsolve
 ```
 
+With the geodesic endpoint functions ``x^μ_I=x^μ_I(λ,X_I,{\bf v})|_{λ=0}``
+
 ```@docs
 squirrel.zF
 ```
+
+To find the roots of the function `f`, the squirrel algorithm first
+computes the Jacobian of `f`. 
 
 ```@docs
 squirrel.gejac

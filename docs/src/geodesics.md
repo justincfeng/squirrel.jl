@@ -35,10 +35,11 @@ and for null geodesics, the initial data satisfies:
 ```
 
 The solution to Hamilton's equations is formally given by
-``x^μ=x^μ(λ,{x}_0,{\bf v})``, and since ``λ`` (being an affine
-parameter) can be redefined linearly, it is appropriate to set up the
-problem so that ``λ∈[0,1]``, with ``λ=0`` being the initial point and
-``λ=1`` is the final point.
+``x^μ=x^μ(λ,{x}_0,{\bf v})`` (with ``x_0`` denoting the initial position
+of the geodesic), and since ``λ`` (being an affine parameter) can be
+redefined linearly, it is appropriate to set up the problem so that
+``λ∈[0,1]``, with ``λ=0`` being the initial point and ``λ=1`` is the
+final point.
 
 ## Implementation
 
