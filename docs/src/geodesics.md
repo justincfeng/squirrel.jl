@@ -99,5 +99,7 @@ squirrel.solveZ
 
 Following the recommendations in the [ODE
 Solver](https://diffeq.sciml.ai/stable/solvers/ode_solve/#ode_solve)
-documentation, the integrators `AutoVern7(Rodas5())` and
-`AutoVern9(Rodas5())` are used in `squirrel.jl`.
+documentation for the
+[`OrdinaryDiffEq.jl`](https://github.com/SciML/OrdinaryDiffEq.jl)
+library, the integrators `AutoVern7(Rodas5())` and `AutoVern9(Rodas5())`
+are used in `squirrel.jl`.

@@ -31,15 +31,23 @@ f := \left( x_1 - x_2 , x_1 - x_3 , x_1 - x_4 \right)
 ```
 
 which may be formally written as ``f=f(X_1,X_2,X_3,X_4,{\bf v}_1,{\bf
-v}_2,{\bf v}_3,{\bf v}_4)``. The squirrel algorithm seeks to find the
-roots of the function ``f``.
+v}_2,{\bf v}_3,{\bf v}_4)``. A variable counting exercise reveals that
+``f`` has ``12`` components; since there are a total of 12 undetermined
+quantities in the four initial velocities ``{\bf v}_I`` (each of which
+have three components), the condition ``f=0`` can thought of as a set of
+``12`` equations for the ``12`` unknowns ``v_I``. The squirrel algorithm
+seeks to find the roots of the function ``f``.
 
 The squirrel algorithm is then summarized:
 
 1.  Apply the flat spacetime algorithm to the emission points `X` to
     obtain an initial guess for the zeros of the function `f`.
 
-2.  Apply a root finding algorithm to the function `f`.
+2.  Apply a root finding algorithm to the function `f` to obtain the
+    initial velocities ``v_I``.
+
+3.  Integrate the geodesics with the resulting initial velocities
+    ``v_I`` and emission points ``X`` to find the intersection point.
 
 A quasi-Newton Broyden algorithm (which will be described in detail
 below) is employed to do the root-finding; in such a method, the
@@ -51,31 +59,49 @@ one can compute the Jacobian by way of automatic differentiation.
 
 ## Geodesic endpoint function
 
-To compute the function `f`, the geodesic endpoint function ``x^μ_I=x^μ_I(λ,X_I,{\bf v})|_{λ=0}`` is implemented as:
+To compute the function `f`, the geodesic endpoint function
+``x^μ_I=x^μ_I(λ,X_I,{\bf v}_I)|_{λ=1}`` is implemented using the native
+Julia ODE solvers in the library
+[`OrdinaryDiffEq.jl`](https://github.com/SciML/OrdinaryDiffEq.jl), using
+the recommended method `AutoVern7(Rodas5())`
 
 ```@docs
 squirrel.gsolve
 ```
 
-With the geodesic endpoint functions ``x^μ_I=x^μ_I(λ,X_I,{\bf v})|_{λ=0}``
+With the geodesic endpoint functions ``x^μ_I=x^μ_I(λ,X_I,{\bf
+v}_I)|_{λ=0}`` in hand, one can construct the function ``f=f(X_I,{\bf
+v}_I)``:
 
 ```@docs
 squirrel.zF
 ```
 
-To find the roots of the function `f`, the squirrel algorithm first
-computes the Jacobian of `f`. 
+## Jacobian
+
+Next, one computes the Jacobian of `f`. As mentioned earlier, this is
+done by way of automatic differentiation, using the library
+[`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl). Here,
+the Jacobian matrix of ``x^μ_I=x^μ_I(λ,X_I,{\bf v}_I)|_{λ=1}`` (which one may write schematically as ``\frac{∂x_I}{∂v_J}``) is
+computed ````:
 
 ```@docs
 squirrel.gejac
 ```
 
-```@docs
-squirrel.geocJ
+Given ``\frac{∂x_I}{∂v_J}``, the Jacobian matrix of the function `f` may
+be computed by way of the chain rule, as indicated in the schematic
+formula:
+
+```@math
+J = \frac{∂f}{∂x_I}\frac{∂x_I}{∂v_J},
 ```
 
+The following function applies the chain rule to compute the Jacobian
+matrix:
+
 ```@docs
-squirrel.idf
+squirrel.geocJ
 ```
 
 ## Root finding algorithm
@@ -119,13 +145,47 @@ The Broyden update formula is implemented in the following function:
 squirrel.bsolve
 ```
 
+## Initial data finder
 
+The following function makes use of the preceding functions to construct
+the initial data for the four-velocities:
 
-## Locator
+```@docs
+squirrel.idf
+```
+
+## Locator (Four points)
+
+Finally, the `locator4` function computes the intersection point from a
+set of four emission points `X` by first employing the `idf` function to
+obtain the initial data for the geodesics, and integrates the geodesics
+(up to unit affine parameter ``λ``) to obtain the intersection point:
 
 ```@docs
 squirrel.locator4
 ```
+
+## Locator (``n_e>4`` emission points)
+
+If more than four emission points are available, the following function
+can generate ``C(n_e,4)`` sets of emission points (where ``C(n,k)`` is
+the binomial coefficient):
+
+```@docs
+squirrel.combX
+```
+
+One feeds the output of `combX` into the `locator4` function to obtain
+``C(n_e,4)`` solutions. The following outlier detection formula, which
+is based on the comparison with median values, can then be used to
+exclude large errors (the assumption here is that the large errors are
+infreqent):
+
+```@docs
+squirrel.odet
+```
+
+The following function implements the procedure described above, given a matrix of ``4×n_e`` emission points ``X``:
 
 ```@docs
 squirrel.locator
