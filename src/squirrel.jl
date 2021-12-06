@@ -193,24 +193,34 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    locator4( X::RealMtx , Xc::RealVec , gfunc::Function , tol::Real , nb::Int=24 , erc::Bool=false )
+    locator4( X::RealMtx , Xc::RealVec , gfunc::Function , tol::Real , nb::Int=24 , idv::Bool=false , V::RealMtx=zeros(Float64,4,4) )
 
 The function `locator4` computes the intersection point from a set of
 four emission points `X` using the guess `Xc`. The intersection point is
 computed by first finding the initial data using the function `idf`,
-then integrating geodesics to obtain the result.
+then integrating geodesics to obtain the result. If an improved guess
+for the four-velocities is available, one can set `ìdv=true` and specify
+the four-velocities as column vectors in the matrix `V`.
 
 """
 function locator4( X::RealMtx , Xc::RealVec , gfunc::Function ,
-                   tol::Real , nb::Int=24 , erc::Bool=false )
+                   tol::Real , nb::Int=24 , idv::Bool=false , 
+                   V::RealMtx=zeros(Float64,4,4) )
     tpfl=typeof(X[1,1])
 
     Zi  = zeros(tpfl,8,4)
     Zf = copy(Zi)
 
-    for i=1:4
-        Zi[:,i] = vcat( X[:,i] , Xc - X[:,i] )
+    if idv 
+        for i=1:4
+            Zi[:,i] = vcat( X[:,i] , V[:,i] )
+        end
+    else
+        for i=1:4
+            Zi[:,i] = vcat( X[:,i] , Xc - X[:,i] )
+        end
     end
+
     Zi = idf( Zi , gfunc , tol , nb )
     Threads.@threads for i=1:4
         Zf[:,i] = gsolve( Zi[1:4,i] , Zi[5:8,i] , gfunc , tol )
