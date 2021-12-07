@@ -13,8 +13,8 @@ include("plotfunc.jl")
 #       PLOT PARAMETERS
 #-----------------------------------------------------------------------
 
-Neval	= 100000                   # Number of test cases evaluated
-N	= 100000                   # Number of test cases to plot
+Neval	= 1000                  # Evaluated test cases (for filenames)
+N	= 1000                  # Number of test cases to plot
 
 pfx     = "td"                  # Filename string prefix
 sufx 	= ""                    # Filename string suffix
@@ -23,6 +23,8 @@ Nes	= string(Neval)         # Turn Neval into a string
 Ns      = string(N)             # Turn Ns into a string
 
 tpfl    = Float64               # Floating point precision to use
+
+hisfac  = Int(round(N/100))     # Histogram factor
 
 #-----------------------------------------------------------------------
 #       CONVERSION FACTORS
@@ -63,7 +65,7 @@ histL    = 0.0                                  # Histogram lower limit
 histU    = 50.0                                 # Histogram upper limit
 
 xrange   = (0,10)               # x range for histogram plot 
-yrange   = (0,15000)            # y range for histogram plot 
+yrange   = (0,15*hisfac)        # y range for histogram plot 
 
 histpar  = (binwidth,histL,histU)
 labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
@@ -101,7 +103,7 @@ histL    = 0.0                                  # Histogram lower limit
 histU    = 500.0                                # Histogram upper limit
 
 xrange   = (0,100)              # x range for histogram plot 
-yrange   = (0,15000)            # y range for histogram plot 
+yrange   = (0,15*hisfac)        # y range for histogram plot 
 
 histpar  = (binwidth,histL,histU)
 labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
@@ -137,7 +139,7 @@ histL    = 0.0                                  # Histogram lower limit
 histU    = 10.0                                 # Histogram upper limit
 
 xrange   = (0,2)                # x range for histogram plot 
-yrange   = (0,20000)            # y range for histogram plot 
+yrange   = (0,20*hisfac)        # y range for histogram plot 
 
 histpar  = (binwidth,histL,histU)
 labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
@@ -173,7 +175,7 @@ histL    = 0.0                                  # Histogram lower limit
 histU    = 5.0                                # Histogram upper limit
 
 xrange   = (0,0.5)              # x range for histogram plot 
-yrange   = (0,30000)            # y range for histogram plot 
+yrange   = (0,30*hisfac)        # y range for histogram plot  
 
 histpar  = (binwidth,histL,histU)
 labelsh  = ("Horizontal error ("*unitstr*")","Number of test cases")
@@ -203,14 +205,14 @@ labelsv  = ("Vertical error ("*unitstrC*")","Number of test cases")
 binwidth = 0.00025                              # Histogram bin width
 histpar  = (binwidth,histL,histU)
 xrange   = (0,0.05)             # x range for histogram plot 
-yrange   = (0,20000)            # y range for histogram plot 
+yrange   = (0,20*hisfac)        # y range for histogram plot 
 PlotErr( hC , (ersC[1],ersC[4]) , histpar , xrange , yrange , labelsh ,
          dir*"plotHerr-"*sfx*"C.pdf" )
 
 binwidth = 0.02                              # Histogram bin width
 histpar  = (binwidth,histL,histU)
 xrange   = (0,4)               # x range for histogram plot 
-yrange   = (0,4000)            # y range for histogram plot 
+yrange   = (0,4*hisfac)        # y range for histogram plot  
 PlotErr( vC , (ersC[2],ersC[5]) , histpar , xrange , yrange , labelsv ,
          dir*"plotVerr-"*sfx*"C.pdf" )
 

@@ -1,7 +1,19 @@
 #-----------------------------------------------------------------------
+"""
+        rms( x::Vector )
+
+Computes the `rms` value for a vectors.
+"""
 rms=x->sqrt(dot(x,x)/length(x))            # Root Mean Square calculator
 
 #-----------------------------------------------------------------------
+"""
+        PrintErr(  h::RealVec , v::RealVec  , e::RealVec , thresh::Tuple , pf::String , units::String )
+
+This function prints the errors, their rms and 95% CL values, and the 
+maximum error.
+
+"""
 function PrintErr(  h::RealVec , v::RealVec  , e::RealVec , 
                     thresh::Tuple , pf::String , units::String )
     hrms = rms(h)
@@ -51,6 +63,12 @@ function PrintErr(  h::RealVec , v::RealVec  , e::RealVec ,
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple , xr::Tuple , yr::Tuple , labels::Tuple , plotname::String )
+
+This function plots the errors.
+
+"""
 function PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple , 
                     xr::Tuple , yr::Tuple , labels::Tuple , 
                     plotname::String )
@@ -68,4 +86,3 @@ function PlotErr(   err::RealVec  , lines::Tuple , histpar::Tuple ,
     )
     savefig(plotname)
 end     #---------------------------------------------------------------
-
