@@ -114,7 +114,11 @@ Before running the scripts, one should make the following directory
 
     julia> mkdir(dirname(dirname(pathof(squirrel)))*"/res/")
 
-To generate the samples, one should run the `samplegen.jl` script:
+To generate the samples, one should first change to the scripts directory
+
+    julia> cd(pathscripts)
+
+and then run the `samplegen.jl` script:
 
     julia> include(pathscript*"samplegen.jl")
 

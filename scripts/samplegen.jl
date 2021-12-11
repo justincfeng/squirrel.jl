@@ -4,7 +4,7 @@
 
 using LinearAlgebra, Serialization, BenchmarkTools
 
-include("../src/squirrel.jl")
+#include("../src/squirrel.jl")
 include("../src/metric.jl")
 
 g  	= metric.g
