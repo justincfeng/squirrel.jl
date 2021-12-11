@@ -86,8 +86,6 @@ function:
 squirrel.ZdotGeo
 ```
 
-The symplectic operator 
-
 ## Geodesic solver function
 
 Geodesics are solved with the following function, which outputs the

@@ -15,13 +15,13 @@ formally written as the functions:
     x^μ_I(λ,{X}_I,{\bf v}_I),
 ```
 
-where the indices ``I∈\\{1,2,...,n_e\\}`` distinguish the emission
+where the indices ``I∈\{1,2,...,n_e\}`` distinguish the emission
 points ``X_I`` and their associated null geodesics, and ``{\bf v}_I``
 denotes the spatial components of the initial four-velocity vector for
 the null geodesic (the time component is determined by the requirement
 that the four-velocity is null). 
 
-Given a collection of four geodesic functions ``\\{x_1,x_2,x_3,x_4\\}``
+Given a collection of four geodesic functions ``\{x_1,x_2,x_3,x_4\}``
 (each having the form ``x^μ_I=x^μ_I(λ,{x}_0,{\bf v})``), the condition
 that they intersect is the vanishing of the following vector-valued
 function:
@@ -83,7 +83,7 @@ Next, one computes the Jacobian of `f`. As mentioned earlier, this is
 done by way of automatic differentiation, using the library
 [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl). Here,
 the Jacobian matrix of ``x^μ_I=x^μ_I(λ,X_I,{\bf v}_I)|_{λ=1}`` (which one may write schematically as ``\frac{∂x_I}{∂v_J}``) is
-computed ````:
+computed:
 
 ```@docs
 squirrel.gejac
@@ -93,7 +93,7 @@ Given ``\frac{∂x_I}{∂v_J}``, the Jacobian matrix of the function `f` may
 be computed by way of the chain rule, as indicated in the schematic
 formula:
 
-```@math
+```math
 J = \frac{∂f}{∂x_I}\frac{∂x_I}{∂v_J},
 ```
 

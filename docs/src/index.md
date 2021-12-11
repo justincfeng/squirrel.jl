@@ -23,7 +23,7 @@ in the package manager for the Julia `REPL`:
 
     pkg> add https://github.com/justincfeng/squirrel.jl/
 
-Once added, one may access the `cereal` module with the following 
+Once added, one may access the `squirrel` module with the following 
 command:
 
     julia> using squirrel
