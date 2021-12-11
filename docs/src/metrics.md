@@ -23,6 +23,19 @@ and ``r`` is implicitly defined by:
 \frac{x^2+y^2}{r^2+a^2} + \frac{z^2}{r^2} = 1 .
 ```
 
+The components of the Kerr-Schild metric can be calculated using
+`gks` function in general
+
+```@docs	
+squirrel.metric.gks
+```
+
+or using `ge` fucntion for Earth-like parameters
+
+```@docs	
+squirrel.metric.ge
+```
+
 ## Weak field metric
 
 For solar system and terrestrial positioning, the weak field metric
