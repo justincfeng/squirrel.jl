@@ -9,8 +9,8 @@
     combX( X::RealMtx )
 
 The `combX` function constructs and returns a vector of ``4×4`` matrices
-consisting of all choices of 4 column vectors from the ``4×n_e`` matrix
-``X``.
+consisting of all choices of 4 column vectors from the ``4×n_{\rm e}`` matrix
+`X`.
 
 """
 function combX( X::RealMtx )
