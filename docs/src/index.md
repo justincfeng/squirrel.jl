@@ -116,16 +116,16 @@ Before running the scripts, one should make the following directory
 
 To generate the samples, one should first change to the scripts directory
 
-    julia> cd(pathscripts)
+    julia> cd(pathscript)
 
 and then run the `samplegen.jl` script:
 
-    julia> include(pathscript*"samplegen.jl")
+    julia> include("samplegen.jl")
 
 This will generate 1000 samples. Once the samples have been generated,
 run the evaluation script:
 
-    julia> include(pathscript*"evaluation.jl")
+    julia> include("evaluation.jl")
 
 which will evaluate the locator functions in `squirrel.jl` for 1000 test
 cases, and for the terrestrial positioning problem in four geometries:
@@ -142,7 +142,7 @@ can do it by running julia with the command:
 
 The results can be plotted with the scripts:
 
-    julia> include(pathscript*"plotresults.jl")
+    julia> include("plotresults.jl")
 
 The results are located in the following `res` directory:
 
