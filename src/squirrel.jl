@@ -260,7 +260,7 @@ function locator(  X::RealMtx , gfunc::Function , δ::Real ,
     elseif l[2] == 4 || ne == 4 
         Xdual   = locator4FHC21( tpflc.(X) )
         X1 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
-        X2 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
+        X2 = locator4( X , Xdual[2] , gfunc , δ , nb , false )
         return (X1,X2)
     elseif l[2] >= 5
         if  ne >= 5 && ne < size(X)[2]
