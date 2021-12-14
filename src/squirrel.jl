@@ -253,12 +253,12 @@ function locator(  X::RealMtx , gfunc::Function , δ::Real ,
     l = size(X)
 
     if gfunc == x->ημν(x)
-        return mlocator( tpflc.(Y) )
+        return mlocator( tpflc.(X) )
     elseif  l[2] < 4 || ne < 4
         print("Need more than four emission points.")
         return zeros(tpfl,4)
     elseif l[2] == 4 || ne == 4 
-        Xdual   = locator4FHC21( tpflc.(Y) )
+        Xdual   = locator4FHC21( tpflc.(X) )
         X1 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
         X2 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
         return (X1,X2)
