@@ -1,7 +1,5 @@
 #-----------------------------------------------------------------------
 """
-# Multiple emission set vector generator
-
     multivec( X::RealMtx , k::Int )
 
 This function takes a ``m×n`` matrix `X`, and for `k```<n``,
@@ -31,6 +29,14 @@ function multivec( X::RealMtx , k::Int )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+"""
+    mlocator( X::RealMtx )
+
+The function `mlocator` computes a single intersection point ``X_c`` 
+from an ``m×n`` matrix `X` formed from `n>4` emission points, which form
+the column vectors of `X`.
+
+"""
 function mlocator( X::RealMtx )
     #   Calculates location for more than five emission points
     tpfl = typeof(X[1,1])

@@ -5,6 +5,14 @@
 #-----------------------------------------------------------------------
 #   PSEUDO-EPSTEIN FUNCTION
 #-----------------------------------------------------------------------
+"""
+    pEp( h , hc , B , Nmax )
+
+The function `pEp` implements the pseudo-Epstein line shape function
+used to approximate the Epstein function used to construct the 
+ionospheric electron density profiles.
+
+"""
 function pEp( h , hc , B , Nmax )
     return  (Nmax/16.0)*(   1/(1 + ((h - hc)/(2.0*B))^2) + 
                             1/(1 + ((h - hc)/(4.0*B))^2)^2 + 
@@ -16,6 +24,13 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   LINE SHAPE FUNCTION
 #-----------------------------------------------------------------------
+"""
+    LSF( x , xo , σ )
+
+The function `LSF` implements a line shape function employed in the
+perturbation models; it has a faster falloff than the Lorentzian.
+
+"""
 function LSF( x , xo , σ )
     return  ( σ^2 / ( σ^2 + (x-xo)^2 ) )*
             ( σ^4 / ( σ^4 + (x-xo)^4 ) )
@@ -24,6 +39,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   INDEX OF REFRACTION FOR IONOSPHERE
 #-----------------------------------------------------------------------
+"""
+    Δnios( h::Real , θ::Real , ϕ::Real )
+
+The function `Δnios` provides a crude model for the ionospheric
+electron density profile. The variable `h` represents height from the
+Earth's surface in units of km.
+
+"""
 function Δnios( h::Real , θ::Real , ϕ::Real )
     # This is a crude model which emulates ionospheric effects
     # h is height from surface in km
@@ -38,6 +61,15 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   TOTAL INDEX OF REFRACTION
 #-----------------------------------------------------------------------
+"""
+    Δntot( h::Real , θ::Real , ϕ::Real )
+
+The function `Δntot` is the total index of refraction profile, which
+is a sum of atmospheric and ionospheric index of refraction profiles. 
+The variable `h` represents height from the Earth's surface in units of 
+km.
+
+"""
 function Δntot( h::Real , θ::Real , ϕ::Real )
     # h is height from surface in km
     tpfl=typeof(h)
@@ -47,6 +79,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   PERTURBATION MODELS
 #-----------------------------------------------------------------------
+"""
+    P( h::Real , h0::RealVec , σ::RealVec )
+
+The function `P` constructs the perturbation model, which consists of
+a sum of line shape functions `LSF`, with the parameters provided in
+the vector arguments `h0` and `σ`.
+
+"""
 function P( h::Real , h0::RealVec , σ::RealVec )
     tpfl=typeof(h)
     n = length(h0)
@@ -56,6 +96,15 @@ end
 #-----------------------------------------------------------------------
 #   TOTAL INDEX OF REFRACTION WITH PERTURBATION
 #-----------------------------------------------------------------------
+"""
+    Δntp( h::Real , θ::Real , ϕ::Real , δ1::Real=0.001
+               , δ2::Real=0.010 , Patm::Function=h->1.0
+               , Pion::Function=h->1.0 )
+
+The function `Δntp` adds the perturbations provided in the perturbation
+model to the atmospheric and ionospheric profiles defined earlier.
+
+"""
 function Δntp( h::Real , θ::Real , ϕ::Real , δ1::Real=0.001
                , δ2::Real=0.010 , Patm::Function=h->1.0
                , Pion::Function=h->1.0 )
@@ -69,6 +118,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   COMPUTE INDEX OF REFRACTION (SPHERICAL COORDINATES)
 #-----------------------------------------------------------------------
+"""
+    nIRs( RE::Real , r::Real , θ::Real , ϕ::Real , Δnf::Function )
+
+The function `nIRs` computes the index of refraction in spherical
+coordinates from the index of refraction profile function `Δnf` in
+spherical coordinates. 
+
+"""
 function nIRs( RE::Real , r::Real , θ::Real , ϕ::Real , Δnf::Function )
     # RE and r in units of Earth mass
     tpfl=typeof(RE)
@@ -80,6 +137,14 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   COMPUTE INDEX OF REFRACTION
 #-----------------------------------------------------------------------
+"""
+    nIR( X::RealVec , Δnf::Function=Δntot )
+
+The function `nIR` computes the index of refraction in Cartesian
+coordinates; the profile is anchored to the WGS84 ellipsoid defined by
+the `rell` function.
+
+"""
 function nIR( X::RealVec , Δnf::Function=Δntot )
     # RE and r in units of Earth mass
 

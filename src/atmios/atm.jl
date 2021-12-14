@@ -5,6 +5,14 @@
 #-----------------------------------------------------------------------
 #   STANDARD ATMOSPHERIC PROFILE
 #-----------------------------------------------------------------------
+"""
+    ΔnatmStd( h::Real )
+
+The function `ΔnatmStd` is a profile for the atmospheric index of 
+of refraction obtained from the U. S. standard atmosphere data. The
+argument `h` is height from the Earth's surface in km.
+
+"""
 function ΔnatmStd( h::Real ) # h is height from surface in km
     tpfl=typeof(h)
     return  -222.66559677864387/
@@ -20,13 +28,18 @@ function ΔnatmStd( h::Real ) # h is height from surface in km
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   REVISED EDLEN EQUATION
+#   REVISED EDLEN FORMULA
 #-----------------------------------------------------------------------
-function ΔnREdlen( P::Real , T::Real , λ::Real )
-    # P is pressure profile in Pascals      (should be a function of h)
-    # T is temperature profile in C         (should be a function of h)
-    # λ is optical wavelength in μm
+"""
+    ΔnREdlen( P::Real , T::Real , λ::Real )
 
+The function `ΔnREdlen` provides the (revised) Edlen formula for 
+computing the index of refraction from atmospheric parameters `P`, `T`,
+and `λ`, corresponding to the respective pressure (in Pascals), 
+temperature (in Celsius), and optical wavelength (in μm).
+
+"""
+function ΔnREdlen( P::Real , T::Real , λ::Real )
     tpfl=typeof(P)
 
     # dispersion relation
