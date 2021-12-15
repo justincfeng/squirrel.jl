@@ -198,6 +198,3 @@ of test cases), one should make a copy of the repository, make changes
 to the files in the `scripts` folder of the repository (the parameters
 of the script `plotresults.jl` should be changed accordingly). One may
 then run the edited scripts in the `scripts` folder.
-
-## References
-
