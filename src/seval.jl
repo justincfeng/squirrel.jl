@@ -609,7 +609,7 @@ td = TestData( par , N , tc2.X , tc2.Xtar
 if d >= 5 && ne >= 5
     for i=1:N
         td.Xc[i]    = mlocator( td.X[i] )
-        td.Xsc[i]   = sloc( td.X[i] , g , tol , nb , Double64 , ξ , ne )
+        td.Xsc[i]   = sloc( td.X[i] , g , tol , ne , nb , ξ , Double64 )
         ΔXsq = td.Xtar[i] - td.Xsc[i]
         ΔXcr = td.Xtar[i] - td.Xc[i]
 
@@ -625,8 +625,8 @@ if d >= 5 && ne >= 5
 elseif d == 4 || (d >= 4 && ne == 4)
     for i=1:N
         (td.Xc[i] ,td.Xc2[i])   = locator4FHC21( td.X[i] )
-        (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , tol , nb , 
-                                        Double64 , ξ , ne )
+        (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , tol , ne , nb ,
+                                        ξ , Double64 )
         ΔXsq  = td.Xtar[i] - td.Xsc[i]
         ΔXcr  = td.Xtar[i] - td.Xc[i]
         ΔXsq2 = td.Xtar[i] - td.Xsc2[i]

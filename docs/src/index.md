@@ -86,19 +86,63 @@ This metric is the Gordon metric for light propagatation through media;
 here, a simple model for the atmosphere and ionosphere is implemented.
 One may repeat the steps of the vacuum case to obtain the errors:
 
-    julia> (X,Xtar) = squirrel.seval.pgen(6e9,g,1e-14,5) ;
+    julia> (Xn,Xntar) = squirrel.seval.pgen(6e9,g,1e-14,5) ;
 
-    julia> Xs = squirrel.locator(X,g,1e-10)
+    julia> Xns = squirrel.locator(Xn,g,1e-10)
 
-    julia> ΔX = Xs-Xtar
+    julia> ΔXn = Xns-Xntar
 
-    julia> 0.4435*ΔX
+    julia> 0.4435*ΔXn
 
-    julia> squirrel.norm(ΔX)/squirrel.norm(Xtar)
+    julia> squirrel.norm(ΔXn)/squirrel.norm(Xntar)
 
 In this case, one typically finds that the errors are larger than the
 vacuum case by an order of magnitude, though still in the submillimeter
 range.
+
+### Benchmarking
+
+For benchmarking, it is best to start Julia with four threads enabled.
+This can be done by starting Julia from the terminal with the command:
+
+    julia --threads 4
+
+The number of threads can be verified with the command:
+
+    julia> Threads.nthreads()
+
+To determine the execution time, one may use the package
+(`BenchmarkTools`](https://github.com/JuliaCI/BenchmarkTools.jl). Once
+installed, one first runs the command:
+
+    julia> using BenchmarkTools
+
+One should then run the following commands:
+
+    julia> using squirrel
+    julia> gks = squirrel.metric.ge
+    julia> g   = squirrel.metric.g
+    julia> (X,Xtar)   = squirrel.seval.pgen(6e9,gks,1e-14,6) ;
+    julia> (Xn,Xntar) = squirrel.seval.pgen(6e9,g,1e-14,6)   ;
+
+Julia employs Just-In-Time (JIT) compilation. Practically, this means
+that the first time a function is executed, additional time is required
+to compile the code. For this reason, it is recommended that the
+following functions are run first before performing execution time
+benchmarks:
+
+    julia> squirrel.locator(X,gks,1e-10) ;
+    julia> squirrel.locator(Xn,g,1e-10)  ;
+
+The execution time may be determined by running the following commands:
+
+    julia> @btime squirrel.locator(Xn,gks,1e-10,4)
+    julia> @btime squirrel.locator(Xn,gks,1e-10,5)
+    julia> @btime squirrel.locator(Xn,gks,1e-10,6)
+
+    julia> @btime squirrel.locator(X,g,1e-10,4)
+    julia> @btime squirrel.locator(X,g,1e-10,5)
+    julia> @btime squirrel.locator(X,g,1e-10,6)
 
 ### Evaluation
 

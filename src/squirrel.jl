@@ -236,18 +236,17 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    locator( X::RealMtx , gfunc::Function , δ::Real , nb::Int=24 , tpflc::DataType=Double64 , outthresh::Real=1e1 , ne::Int=5 )
+    locator( X::RealMtx , gfunc::Function , δ::Real , ne::Int=5 , nb::Int=24 , outthresh::Real=2e1 , tpflc::DataType=Double64 )
 
 The function `locator` computes the intersection point from a set of
-`ne>4` emission points `X` by applying `locator4` to all
-combinations of 4 points out of `ne` in `X`. A basic outlier
-detection algorithm (implemented in the function `odetc`) is applied to
-reduce errors.
+`ne>4` emission points `X` by applying `locator4` to all combinations of
+4 points out of `ne` in `X`. A basic outlier detection algorithm
+(implemented in the function `odetc`) is applied to reduce errors.
 
 """
-function locator(  X::RealMtx , gfunc::Function , δ::Real ,
-                   nb::Int=24 , tpflc::DataType=Double64 , 
-                   outthresh::Real=1e1 , ne::Int=5 )
+function locator(  X::RealMtx , gfunc::Function , δ::Real , ne::Int=5 ,
+                   nb::Int=24 , outthresh::Real=2e1 , 
+                   tpflc::DataType=Double64 )
     tpfl  = typeof(X[1,1])
 
     l = size(X)
