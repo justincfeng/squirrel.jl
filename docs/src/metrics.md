@@ -10,8 +10,8 @@ The Kerr-Schild metric takes the form:
 
 where 
 ```math
-  k_\mu = \left( \frac{r \, x + a \, y}{r^2+a^2}
-                , \frac{r \, y - a \, x}{r^2+a^2} \frac{z}{r}\right)
+  k_\mu = \left( 1 , \frac{r \, x + a \, y}{r^2+a^2}
+                , \frac{r \, y - a \, x}{r^2+a^2} , \frac{z}{r}\right)
 ```
 ```math
   f = \frac{2 \, G \, M \, r^3}{r^4+a^2 \, z^2},
@@ -30,7 +30,7 @@ The components of the Kerr-Schild metric can be calculated using
 squirrel.metric.gks
 ```
 
-or using `ge` fucntion for Earth-like parameters
+or using the `ge` function for Earth-like parameters
 
 ```@docs	
 squirrel.metric.ge
