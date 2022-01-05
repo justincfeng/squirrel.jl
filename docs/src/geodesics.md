@@ -62,7 +62,7 @@ where ``J^{αβ}`` is the symplectic matrix, which has the block matrix
 form:
 
 ```math
-J =
+J^{\cdot\cdot} =
 \left[
   \begin{array}{cccc}
      O  &  I  \\

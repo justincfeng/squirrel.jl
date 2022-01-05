@@ -8,7 +8,10 @@
 """
     JiSMU( ΔF::RealVec , Δx::RealVec , Ji::RealMtx )
 
-The function `JiSMU` implements the Sherman-Morrison update formula.
+The function `JiSMU` implements the Sherman-Morrison update formula, 
+returning an updated value of the Jacobian matrix `Ji`, given the 
+respective differences `ΔF` and `Δx` for the function ``F(x)`` and its 
+argument ``x``.
 
 """
 function JiSMU( ΔF::RealVec , Δx::RealVec , Ji::RealMtx )
@@ -22,9 +25,9 @@ end     #---------------------------------------------------------------
             nb::Int=24 )
 
 The function `bsolve` implements the Broyden algorithm; in particular,
-it finds the roots of the function `F(x)`, given the Jacobian matrix `J`
-and the initial guesses `f0` and `x0`. The parameter `nb` specifies the
-maximum number of iterations.
+it finds the roots of the function `F(x)`, given an initial Jacobian 
+matrix `J` and the initial guesses `f0` and `x0`. The parameter `nb` 
+specifies the maximum number of iterations.
 
 """
 function bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec ,
