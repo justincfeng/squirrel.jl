@@ -162,8 +162,13 @@ end     #---------------------------------------------------------------
 """
     idf( Zi::RealMtx , gfunc::Function , tol::Real , nb::Int )
 
-The function `idf` applies the Broyden algorithm to the function `zF`,
-using the Jacobian initially computed with `geocJ`.
+The function `idf` takes as input `Zi`, a matrix formed from the
+emission points and guesses for the initial four-velocities, and the
+metric function `gfunc` and outputs the corrected initial data for the
+geodesics. `tol` is the tolerance parameter and `nb` is the Broyden
+termination limit). This function calls `geocJ` to compute the initial
+Jacobian, then calls and applies the Broyden root finding function
+`bsolve` to the function `zF` (also called).
 
 """
 function idf( Zi::RealMtx , gfunc::Function , tol::Real , nb::Int )

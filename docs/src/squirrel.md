@@ -41,7 +41,7 @@ have three components), the condition ``F=0`` can thought of as a set of
 ``12`` equations for the ``12`` unknowns ``{\bf v}_I``. Since the relevant 
 variables for the root finding algorithm are ``{\bf v}_I``, one may 
 suppress the arguments ``X_I`` to write 
-``f(v)=F(X_1,X_2,X_3,X_4,{\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)``, where 
+``f(v):=F(X_1,X_2,X_3,X_4,{\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)``, where 
 ``v:=({\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)`` represents the 
 concatenation of the vectors ``{\bf v}_I``. The squirrel algorithm
 seeks to find the roots of the function ``f(v)``.
@@ -68,7 +68,7 @@ one can compute the Jacobian by way of automatic differentiation.
 ## Geodesic endpoint function
 
 To compute the function ``f``, the geodesic endpoint function 
-``{\rm x}^μ_I=x^μ_I(λ,X_I,{\bf v}_I)|_{λ=1}`` is implemented using the 
+``{\rm x}^μ_I=x^μ_I(1,X_I,{\bf v}_I)`` is implemented using the 
 native Julia ODE solvers in the library
 [`OrdinaryDiffEq.jl`](https://github.com/SciML/OrdinaryDiffEq.jl), using
 the recommended method `AutoVern7(Rodas5())`
@@ -77,8 +77,8 @@ the recommended method `AutoVern7(Rodas5())`
 squirrel.gsolve
 ```
 
-With the geodesic endpoint functions ``{\rm x}^μ_I=x^μ_I(λ,X_I,{\bf
-v}_I)|_{λ=0}`` in hand, one can construct the function 
+With the geodesic endpoint functions ``{\rm x}^μ_I=x^μ_I(1,X_I,{\bf
+v}_I)`` in hand, one can construct the function 
 ``f(v)=F(X_1,X_2,X_3,X_4,{\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)``:
 
 ```@docs
@@ -90,7 +90,7 @@ squirrel.zF
 Next, one computes the Jacobian of ``f(v)``. As mentioned earlier, this 
 is done by way of automatic differentiation, using the library
 [`ForwardDiff.jl`](https://github.com/JuliaDiff/ForwardDiff.jl). Here,
-the Jacobian matrix of ``{\rm x}^μ_I=x^μ_I(λ,X_I,{\bf v}_I)|_{λ=1}`` 
+the Jacobian matrix of ``{\rm x}^μ_I=x^μ_I(1,X_I,{\bf v}_I)`` 
 (which one may write schematically as ``\frac{∂{\rm x}_I}{∂v_A}``) is
 computed:
 
@@ -166,8 +166,9 @@ respective initial guesses for ``f(v)`` and ``v``.
 
 ## Initial data finder
 
-The following function makes use of the preceding functions to construct
-the initial data for the four-velocities:
+The following function, which is central in the `squirrel.jl` code,
+calls the preceding functions to construct the initial data for the
+four-velocities:
 
 ```@docs
 squirrel.idf
