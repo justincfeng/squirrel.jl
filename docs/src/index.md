@@ -17,26 +17,25 @@ geometries.
 
 ### Setup
 
-The `squirrel.jl` code was written for and tested in Julia 1.6; we
+The `squirrel.jl` code was written and tested in Julia 1.6; we
 recommend Julia 1.6 or newer. In this terminal it is assumed that one
-can invoke Julia directly from the command line/terminal by typing the\
-command
-
-    julia
-
-as is typically the case for installations on linux distributions
-(Ubuntu and Manjaro for instance). For detailed instructions on how
-to set this up, please refer to the
+can invoke Julia directly from the command line/terminal by typing the
+command `julia`, as is typically the case for installations on linux 
+distributions (Ubuntu and Manjaro for instance). For detailed 
+instructions on how to set this up, please refer to the
 [`platform specific`](https://julialang.org/downloads/platform/) 
 installation instructions for Julia.
 
-To add the code, run the following command in the package manager for
-the Julia `REPL` (the package manager can be opened by typing `]`):
+To add `squirrel.jl`, first run the `julia` command in the 
+command line/terminal to open the Julia `REPL`. Next, open the package 
+manager by typing `]`. In the package manager, run the command to add
+`squirrel.jl`:
 
     pkg> add https://github.com/justincfeng/squirrel.jl/
 
-Once added, one may access the `squirrel` module with the following
-command:
+The package manager can be exited by pressing the backspace key. Once 
+the added, one may access the functions contained in the `squirrel` 
+module with the following command:
 
     julia> using squirrel
 
