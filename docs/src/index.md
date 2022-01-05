@@ -4,8 +4,8 @@
 
 Relativistic positioning refers to the concept of establishing spacetime
 positions from proper time broadcasts emitted by a system of satellites.
-Central to relativistic positioning is the relativistic location
-location problem, which is the problem of finding the intersection of
+Central to relativistic positioning is the relativistic location problem, 
+which is the problem of finding the intersection of
 future pointing light cones from a collection of at least four emission
 points. Algorithms for relativistic location in flat spacetime are
 provided in the [`cereal.jl`](https://github.com/justincfeng/cereal.jl/)
@@ -18,12 +18,24 @@ geometries.
 ### Setup
 
 The `squirrel.jl` code was written for and tested in Julia 1.6; we
-recommend Julia 1.6 or newer. To add the code, run the following command
-in the package manager for the Julia `REPL`:
+recommend Julia 1.6 or newer. In this terminal it is assumed that one
+can invoke Julia directly from the command line/terminal by typing the\
+command
+
+    julia
+
+as is typically the case for installations on linux distributions
+(Ubuntu and Manjaro for instance). For detailed instructions on how
+to set this up, please refer to the
+[`platform specific`](https://julialang.org/downloads/platform/) 
+installation instructions for Julia.
+
+To add the code, run the following command in the package manager for
+the Julia `REPL` (the package manager can be opened by typing `]`):
 
     pkg> add https://github.com/justincfeng/squirrel.jl/
 
-Once added, one may access the `squirrel` module with the following 
+Once added, one may access the `squirrel` module with the following
 command:
 
     julia> using squirrel
@@ -72,7 +84,7 @@ running:
 
     julia> squirrel.norm(ΔX)/squirrel.norm(Xtar)
 
-and one typically obtains errors on the order of ``\sim 10^{-12} -
+and one typically obtains errors on the order of ``\sim 10^{-11} -
 10^{-13}``.
 
 #### Including atmospheric and ionospheric effects
@@ -98,12 +110,13 @@ One may repeat the steps of the vacuum case to obtain the errors:
 
 In this case, one typically finds that the errors are larger than the
 vacuum case by an order of magnitude, though still in the submillimeter
-range.
+range. 
 
 ### Benchmarking
 
 For benchmarking, it is best to start Julia with four threads enabled.
-This can be done by starting Julia from the terminal with the command:
+This can be done by starting Julia from the command line/terminal with 
+the command (to exit the Julia REPL, run the command `julia> exit()`):
 
     julia --threads 4
 
@@ -146,6 +159,10 @@ The execution time may be determined by running the following commands:
 
 ### Evaluation
 
+It is recommended that the evaluation scripts are run with four threads;
+as indicated in the Benchmarks section, one can do this from the command
+line/terminal command `julia --threads 4`.
+
 Scripts are provided for a more comprehensive evaluation of the accuracy
 and performance of the functions in `squirrel.jl`. To find the scripts
 directory, run the command:
@@ -162,7 +179,8 @@ To generate the samples, one should first change to the scripts directory
 
     julia> cd(pathscript)
 
-and then run the `samplegen.jl` script:
+and then run the `samplegen.jl` script (which may require installation of
+the `CoordinateTransformations` and `LegendrePolynomials` packages):
 
     julia> include("samplegen.jl")
 
@@ -178,11 +196,6 @@ modeling atmospheric and ionospheric effects and two perturbed Gordon
 metrics corresponding to fractional uncertainties of up ``1\%``  to
 ``10\%`` in the ionospheric electron density (and a ``0.1\%``
 uncertainty in the atmospheric index of refraction). 
-
-It is recommended that `evaluation.jl` is run with multiple threads. One
-can do it by running julia with the command:
-
-    julia --threads 4
 
 The results can be plotted with the scripts:
 
