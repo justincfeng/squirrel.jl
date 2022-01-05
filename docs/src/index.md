@@ -13,12 +13,12 @@ package. This package, `squirrel.jl`, contains a collection of functions
 for the relativistic location problem in slightly curved spacetime
 geometries.
 
-## Short tutorial
+## Tutorial
 
 ### Setup
 
 The `squirrel.jl` code was written and tested in Julia 1.6; we
-recommend Julia 1.6 or newer. In this terminal it is assumed that one
+recommend Julia 1.6 or newer. In this tutorial, it is assumed that one
 can invoke Julia directly from the command line/terminal by typing the
 command `julia`, as is typically the case for installations on linux 
 distributions (Ubuntu and Manjaro for instance). For detailed 
