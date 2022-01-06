@@ -21,7 +21,7 @@ be used to evaluate the accuracy of the locator functions implemented in
     `squirrel.locator` or `squirrel.locator4` function and compare with
     target point `Xtar`.
 
-The function `seval.gen` is implements steps 1. and 2., and the function
+The function `seval.gen` implements steps 1. and 2., and the function
 `seval.main` implements step 3.
 
 ## Structs and format conversion functions
