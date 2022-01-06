@@ -5,18 +5,33 @@
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   SHERMAN-MORRISON UPDATE FORMULA FOR JACOBIAN
-#-----------------------------------------------------------------------
+"""
+    JiSMU( ΔF::RealVec , Δx::RealVec , Ji::RealMtx )
+
+The function `JiSMU` implements the Sherman-Morrison update formula, 
+returning an updated value of the Jacobian matrix `Ji`, given the 
+respective differences `ΔF` and `Δx` for the function ``F(x)`` and its 
+argument ``x``.
+
+"""
 function JiSMU( ΔF::RealVec , Δx::RealVec , Ji::RealMtx )
     ΔxTJi = transpose(Δx)*Ji
     return Ji + ( ( Δx - Ji*ΔF )/( ΔxTJi*ΔF ) )*( ΔxTJi )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   BROYDEN ALGORITHM
-#-----------------------------------------------------------------------
-function bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec
-                 , nb::Int=24 )
+"""
+    bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec ,
+            nb::Int=24 )
+
+The function `bsolve` implements the Broyden algorithm; in particular,
+it finds the roots of the function `F(x)`, given an initial Jacobian 
+matrix `J` and the initial guesses `f0` and `x0`. The parameter `nb` 
+specifies the maximum number of iterations.
+
+"""
+function bsolve( F::Function , J::RealMtx , f0::RealVec , x0::RealVec ,
+                 nb::Int=24 )
     tpfl = typeof(x0[1])
 
     Ji = inv(J)

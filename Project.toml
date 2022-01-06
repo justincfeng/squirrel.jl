@@ -11,6 +11,7 @@ DiffResults     = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
 
 Statistics      = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Combinatorics   = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+DoubleFloats    = "497a8b3b-efae-58df-a0af-a86822472b78"
 
 LegendrePolynomials       = "3db4a2ba-fc88-11e8-3e01-49c72059a882"
 CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"

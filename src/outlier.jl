@@ -5,8 +5,14 @@
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   COMBINATION
-#-----------------------------------------------------------------------
+"""
+    combX( X::RealMtx )
+
+The `combX` function constructs and returns a vector of ``4×4`` matrices
+consisting of all choices of 4 column vectors from the ``4×n_{\\rm e}`` matrix
+`X`.
+
+"""
 function combX( X::RealMtx )
     tpfl=typeof(X[1,1])
     np = size(X)[2]
@@ -38,23 +44,14 @@ function combX( X::RealMtx )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#   COUNT BOOL=TRUE IN VECTOR OF TUPLE
-#-----------------------------------------------------------------------
-function CBT( X , n )
-    nc = length(X)
-    ns = 0
-    for i=1:nc
-        if X[i][n]
-            ns += 1
-        end
-    end
-    return ns
-end     #---------------------------------------------------------------
+"""
+    odetc( XC::Vector , ξ::Real=1e1 )
 
-#-----------------------------------------------------------------------
-#   OUTLIER DETECTION
-#-----------------------------------------------------------------------
-function odetc( XC::Vector , ξ::Real=1e4 )
+The `odetc` function takes a vector of vectors as input and returns a
+vector of the vectors that differ by less than a threshold of `ξ`.
+
+"""
+function odetc( XC::Vector , ξ::Real=1e1 )
     tpfl    = typeof(XC[1][1])
     ns      = length(XC)
 

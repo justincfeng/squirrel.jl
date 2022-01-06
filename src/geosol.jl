@@ -7,9 +7,16 @@ using OrdinaryDiffEq
 #-----------------------------------------------------------------------
 #       INITIAL DATA NULL ENFORCER FUNCTIONS
 #-----------------------------------------------------------------------
+
 #-----------------------------------------------------------------------
-#       Null condition enforcer: future-directed 
-#-----------------------------------------------------------------------
+"""
+    nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function ) 
+
+The `nullenforcerf` function takes a vector `V0` and modifies the time
+or first component so that it is null at the point `X` with respect to
+`gfunc` and future directed; the function returns the modified vector.
+
+"""
 function nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function )  
     tpfl=typeof(V0[1])
     nx = length(V0)
@@ -44,8 +51,14 @@ function nullenforcerf( V0::RealVec , X::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Null condition enforcer: past-directed
-#-----------------------------------------------------------------------
+"""
+    nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function ) 
+
+The `nullenforcerp` function takes a vector `V0` and modifies the time
+or first component so that it is null at the point `X` with respect to
+`gfunc` and past directed; the function returns the modified vector.
+
+"""
 function nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function )
     tpfl=typeof(V0[1])
     nx = length(V0)
@@ -78,8 +91,15 @@ function nullenforcerp( V0::RealVec , X::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Geodesic Hamiltonian
-#-----------------------------------------------------------------------
+"""
+    HamGeo( Z::RealVec , gfunc::Function )
+
+The `HamGeo` function computes the geodesic Hamiltonian 
+``H = \\frac{1}{2} g^{μν} p_μ p_ν``
+from the metric ``g_{μν}`` provided in the function `gfunc` and the 
+spacetime position `x` and momentum `p` encoded in `Z=(x,p)`.
+
+"""
 function HamGeo( Z::RealVec , gfunc::Function )
     tpfl=typeof(Z[1])
 
@@ -91,8 +111,13 @@ function HamGeo( Z::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Symplectic operator
-#-----------------------------------------------------------------------
+"""
+    Jsympl( Zarg::RealVec )
+
+The `Jsympl` function effectively applies the symplectic matrix
+``J^{αβ}`` to the vector `Zarg` (the vector ``{∂H}/{∂z^β}``).
+
+"""
 function Jsympl( Zarg::RealVec )
     tpfl=typeof(Zarg[1])
     n2 = length(Zarg)
@@ -112,8 +137,13 @@ function Jsympl( Zarg::RealVec )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       ZDotGeo
-#-----------------------------------------------------------------------
+"""
+    ZdotGeo( Z::RealVec , gfunc::Function )
+
+The `ZdotGeo` function computes the gradient of the Hamiltonian and
+applies the symplectic operator to the gradient.
+
+"""
 function ZdotGeo( Z::RealVec , gfunc::Function )
     tpfl=typeof(Z[1])
 
@@ -122,15 +152,33 @@ function ZdotGeo( Z::RealVec , gfunc::Function )
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Z Function
-#-----------------------------------------------------------------------
+"""
+    ZF!( dZ , Z , gfunc::Function )
+
+The function `ZF` converts the function `ZdotGeo` into a function with
+mutable arguments.
+
+"""
 function ZF!( dZ , Z , gfunc::Function )
     copyto!(dZ, ZdotGeo( Z, gfunc ))
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
-#       Solver
-#-----------------------------------------------------------------------
+"""
+    solveZ( Z0::RealVec , gfunc::Function , δ1::Real , δ2::Real ,
+            integrator=AutoVern7(Rodas5()) , δt=0 )
+
+The function `solveZ` performs the integration of geodesics given
+the initial data `Z0`, and the metric function `gfunc`. The integration
+is performed using the integrator specified by the variable `integrator`
+using the relative tolerance parameter `δ1` and the absolute tolerance 
+parameter `δ2`. The parameter `δt` determines the timestep parameter 
+`dt` in ODEProblem. 
+
+The function `solveZ` outputs only the endpoint of the solution for the
+geodesic equation.
+
+"""
 function solveZ( Z0::RealVec , gfunc::Function , δ1::Real , δ2::Real 
                  , integrator=AutoVern7(Rodas5()) , δt=0 )
     tpfl=typeof(Z0[1])
