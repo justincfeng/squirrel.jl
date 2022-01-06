@@ -13,6 +13,9 @@ package. This package, `squirrel.jl`, contains a collection of functions
 for the relativistic location problem in slightly curved spacetime
 geometries.
 
+The name `squirrel` is derived from a pronounciation of the acronym 
+SCuRL for **S**lightly **Cu**rved **R**elativistic **L**ocator.
+
 ## Tutorial
 
 ### Setup
@@ -26,10 +29,10 @@ instructions on how to set this up, please refer to the
 [`platform specific`](https://julialang.org/downloads/platform/) 
 installation instructions for Julia.
 
-To add `squirrel.jl`, first run the `julia` command in the 
-command line/terminal to open the Julia `REPL`. Next, open the package 
-manager by typing `]`. In the package manager, run the command to add
-`squirrel.jl`:
+To add `squirrel.jl` as a package in Julia, first run the `julia`
+command in the command line/terminal to open the Julia `REPL`. Next,
+open the package manager by typing `]`. In the package manager, run the
+command to add `squirrel.jl`:
 
     pkg> add https://github.com/justincfeng/squirrel.jl/
 
