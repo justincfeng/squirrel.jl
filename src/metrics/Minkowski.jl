@@ -8,8 +8,10 @@
 """
     ηdot( V1::RealVec , V2::RealVec )
 
-The function `ηdot` takes two vectors, `V1` and `V2`, of arbitrary 
-dimension and calculates their Minkowski product ``η(V_1,V_2)``
+The function `ηdot` takes two vectors ``V_1`` and ``V_2`` of equal
+dimension, and computes their Minkowski product ``η(V_1,V_2)``, with the
+assumption that the first element of the vectors corresponds to the time
+component.
 
 """
 function ηdot( V1::RealVec , V2::RealVec )  # Computes Minkowski product
@@ -27,18 +29,18 @@ function ηdot( V1::RealVec , V2::RealVec )  # Computes Minkowski product
         print("Vectors are of a different dimension.")
         return 0*V[1]
     end
-end       #---------------------------------------------------------------
+end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   THE MINKOWSKI NORM
+#-----------------------------------------------------------------------
 """
-Minkowski norm
-
     mnorm( V ) 
 
-The function `mnorm` computes the Minkowski norm, which is mathematically
-equivalent to the absolute value of the square root of the Minkowski
-product ``√|η(V_1,V_2)|``. However, this function computes the result
-according to the formula used in the hypot function.
+The function `mnorm` computes the Minkowski norm, which is
+mathematically equivalent to the absolute value of the square root of
+the Minkowski product ``√|η(V_1,V_2)|``. However, this function computes
+the result according to the formula used in the hypot function.
 
 """
 function mnorm( V )
@@ -54,7 +56,7 @@ function mnorm( V )
     else
         return zero( typeof(V[1]) )
     end
-end      #---------------------------------------------------------------
+end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 #   THE MINKOWSKI METRIC (RECTANGULAR COORDINATES)
@@ -62,8 +64,14 @@ end      #---------------------------------------------------------------
 """
     ημν( tpfl::DataType=Float64 , dim::Int=4 )
 
-The function `ημν` returns the components of a Minkowski metric of 
-dimension `dim` using the floating-point datatype `tpfl`
+The function `ημν` constructs the components of the Minkowski metric.
+The first argument `tpfl` specifies the floating point datatype
+(typically Float64 or Double64 if one uses the DoubleFloats package) and
+the second argument `dim` specifies the dimension. The default values
+are `tpfl=Float64` and `dim=4`:
+
+    julia> ημν() == ημν( Float64 , 4 )
+        true
 
 """
 function ημν( tpfl::DataType=Float64 , dim::Int=4 )

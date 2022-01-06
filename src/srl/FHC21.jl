@@ -8,9 +8,9 @@
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   LEVI-CIVITA SYMBOL AND TENSOR
+#-----------------------------------------------------------------------
 """
-Levi-Civita symbol and tensor
-
     ϵ( a , b , c , d )
 
 The function `ϵ` computes the Levi-Civita symbol and implements the
@@ -65,9 +65,9 @@ function ϵ( a , b , c , d )              # Levi-Civita symbol and tensor
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   HODGE VECTOR FUNCTION
+#-----------------------------------------------------------------------
 """
-Hodge vector function
-
     HodgeV( U::RealVec , V::RealVec , W::RealVec )
 
 The function `HodgeV` computes `ϵ(0,U,V,W)`` and effectively raises the
@@ -85,9 +85,9 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   LORENTZ TRANSFORMATION MATRIX CONSTRUCTOR
+#-----------------------------------------------------------------------
 """
-# Lorentz transformation matrix constructor
-
     LTM( NT::RealVec )
 
 This function takes a timelike normal vector `NT` and constructs a 
@@ -124,9 +124,9 @@ function LTM( NT::RealVec )             # Lorentz transformation matrix
 end  # End LTM
 
 #-----------------------------------------------------------------------
+#   ROTATION MATRIX CONSTRUCTOR
+#-----------------------------------------------------------------------
 """
-# Rotation matrix constructor
-
     MRz( v::RealVec )
 
 This function takes a vector `v` and constructs a rotation matrix so
@@ -173,14 +173,14 @@ function MRz( v::RealVec )                   # Rotate to z-adapted frame
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   SPACETIME ROTATION OPERATOR
+#-----------------------------------------------------------------------
 """
-# Spacetime rotation operator
-
     Lrot( X::RealMtx , Λ::RealMtx )
 
 This function applies the transformation transformation matrix `Λ` to
-four emission points, which form the columns of a ``4×4`` matrix `X`. The
-function returns a ``4×4`` matrix of transformed points `X'`.
+four emission points, which form the columns of a ``4×4`` matrix `X`.
+The function returns a ``4×4`` matrix of transformed points `X'`.
 
 """
 function Lrot( X::RealMtx , Λ::RealMtx )  # Spacetime rotation operator
@@ -196,9 +196,9 @@ function Lrot( X::RealMtx , Λ::RealMtx )  # Spacetime rotation operator
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   FLIP SPACELIKE VECTORS ACROSS A NULL DIRECTION
+#-----------------------------------------------------------------------
 """
-# Flip spacelike vectors across a null direction
-
     NormflipS( Vsl::RealVec )
 
 This function takes a spacelike vector `Vsl` and "flips" it across a
@@ -243,20 +243,20 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   INTERSECTION POINT FINDER (SPACELIKE CONFIGURATION HYPERPLANE)
+#-----------------------------------------------------------------------
 """
-# Intersection point finder (Spacelike configuration hyperplane)
-
     IPFinderS( Y::RealMtx ) 
 
 Given a ``4×4`` matrix `Y` of emission points in an adapted frame 
 (defined such that the emission points have the same time coordinate),
-this function computes the coordinates of the intersection point `` X_c `` 
+this function computes the coordinates of the intersection point ``X_c`` 
 for the future pointing light cones of the emission points.
     
 The procedure here is to find the circumcenter of a sphere which 
 circumscribes the emission points. The spatial coordinates of the 
 circumcenter yields the spatial coordinates of the intersection point
-`` X_c `` and the time coordinate is given by the common time coordinate 
+``X_c`` and the time coordinate is given by the common time coordinate 
 of the emission points plus the radius of the circumsphere.
 
 """
@@ -288,23 +288,23 @@ function IPFinderS( Y::RealMtx )
 end  # End IPfinder
 
 #-----------------------------------------------------------------------
+#   INTERSECTION POINT FINDER (TIMELIKE CONFIGURATION HYPERPLANE)
+#-----------------------------------------------------------------------
 """
-# Intersection point finder (Timelike configuration hyperplane)
-
     IPFinderT( Y::RealMtx ) 
 
-Given a ``4×4`` matrix `Y` of emission points in an adapted frame 
-(defined such that the emission points have the same z coordinate),
-this function computes the coordinates of the two intersection points 
-`` X_c `` for the future pointing light cones of the emission points.
-    
-The procedure in this case is to find the vertex of the hyperboloid 
-which passes through the emission points. The coordinates of the vertex 
-on the `` (t,x,y) `` hyperplane yields the `` (t_c,x_c,y_c) `` coordinates of 
-the  intersection points, and the Minkowski distance `` R `` between the 
-vertex and the hyperboloid yields the `` z_c = z_e ± R `` coordinate of the 
-intersection points `` X_c ``, where `` z_e `` is the common `` z `` coordinate
-for the emission points in the adapted frame.
+Given a ``4×4`` matrix `Y` of emission points in an adapted frame
+(defined such that the emission points have the same z coordinate), this
+function computes the coordinates of the two intersection points `` X_c
+`` for the future pointing light cones of the emission points.
+
+The procedure in this case is to find the vertex of the hyperboloid
+which passes through the emission points. The coordinates of the vertex
+on the `` (t,x,y) `` hyperplane yields the `` (t_c,x_c,y_c) ``
+coordinates of the  intersection points, and the Minkowski distance `` R
+`` between the vertex and the hyperboloid yields the `` z_c = z_e ± R ``
+coordinate of the intersection points `` X_c ``, where `` z_e `` is the
+common `` z `` coordinate for the emission points in the adapted frame.
 
 """
 function IPFinderT( Y::RealMtx )   
@@ -414,9 +414,9 @@ end  # End IPfinder
 #-----------------------------------------------------------------------
 
 #-----------------------------------------------------------------------
+#   FOUR POINT LOCATOR FUNCTION (FHC21)
+#-----------------------------------------------------------------------
 """
-# Four point locator function (FHC21)
-
     locator4FHC21( X::RealMtx )
 
 This function implements the four point relativistic location algorithm
