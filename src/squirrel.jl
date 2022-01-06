@@ -113,7 +113,7 @@ end     #---------------------------------------------------------------
     geocJ( Zi::RealMtx , g::Function , δ::Real )
 
 The function `geocJ` computes the Jacobian of the function `zF` from the
-Jacobian endpoints computed in `gejac`.
+endpoint Jacobians computed by calling `gejac` function.
 
 """
 function geocJ( Zi::RealMtx , g::Function , δ::Real )

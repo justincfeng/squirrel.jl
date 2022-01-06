@@ -89,7 +89,7 @@ The atmospheric component for the index of refraction is given here as a
 function of the height ``h`` from the surface of the Earth:
 
 ```math
-\Delta n_{atm} = \frac{A_1}{B_1 + C_1 \left(h-H_1)\right)}
+\Delta n_{\rm atm} = \frac{A_1}{B_1 + C_1 \left(h-H_1)\right)}
   + \frac{A_2}{B_2 + C_2 \left(h-H_2)\right)}
 ```
 with the parameter choices:
@@ -104,7 +104,7 @@ with the parameter choices:
 \end{aligned}
 ```
 
-The function ``\Delta n_{atm}`` is implemented in the following:
+The function ``\Delta n_{\rm atm}`` is implemented in the following:
 
 ```@docs	
 squirrel.metric.ΔnatmStd
@@ -115,49 +115,49 @@ squirrel.metric.ΔnatmStd
 The ionospheric component index of refraction is given by the following:
 ```math
 \begin{aligned}
-    \Delta n_{ion} \approx 
-              \left(4.024 \times 10^{-17}\right) [N_e/\text{m}^{-3}]
+    \Delta n_{\rm ion} \approx 
+              \left(4.024 \times 10^{-17}\right) [N_{\rm e}/\text{m}^{-3}]
 \end{aligned}
 ```
 
 where the electron density is given by:
 ```math
 \begin{aligned}
-    N_e :=& \biggl[\alpha_D \, \tilde Ep(h,h_D,b_D)
-          + \alpha_E \, \tilde Ep(h,h_E,b_E) 
-          + \alpha_F \, \tilde Ep(h,h_F,b_F)\biggr],
+    N_{\rm e} :=& \biggl[\alpha_{\rm D} \, \tilde Ep(h,h_{\rm D},b_{\rm D})
+          + \alpha_{\rm E} \, \tilde Ep(h,h_{\rm E},b_{\rm E}) 
+          + \alpha_{\rm F} \, \tilde Ep(h,h_{\rm F},b_{\rm F})\biggr],
 \end{aligned}
 ```
 
 with the parameter choices:
 ```math
 \begin{aligned}
-    \alpha_D &= 10^{12}~\text{m}^{-3}
-                   &\quad   h_D &=  75~\text{km}
-                   &\quad   b_D &=   5~\text{km} \\
-    \alpha_E &= 2.5 \times 10^{11}~\text{m}^{-3}
-                   &\quad   h_E &= 130~\text{km}
-                   &\quad   b_E &=  30~\text{km} \\
-    \alpha_F &= 10^{11}~\text{m}^{-3}
-                   &\quad   h_F &= 300~\text{km}
-                   &\quad   b_F &=  50~\text{km} .
+    \alpha_{\rm D} &= 10^{12}~\text{m}^{-3}
+                   &\quad   h_{\rm D} &=  75~\text{km}
+                   &\quad   b_{\rm D} &=   5~\text{km} \\
+    \alpha_{\rm E} &= 2.5 \times 10^{11}~\text{m}^{-3}
+                   &\quad   h_{\rm E} &= 130~\text{km}
+                   &\quad   b_{\rm E} &=  30~\text{km} \\
+    \alpha_{\rm F} &= 10^{11}~\text{m}^{-3}
+                   &\quad   h_{\rm F} &= 300~\text{km}
+                   &\quad   b_{\rm F} &=  50~\text{km} .
 \end{aligned}
 ```
 
-The function `` \tilde Ep(h,h_E,b_E)`` is the pseudo-Epstein function:
+The function `` \tilde Ep`` is the pseudo-Epstein function:
 ```math
 \begin{aligned}
-    \tilde Ep(h,h_c,B) := &\frac{1}{16}
+    \tilde Ep(h,h_{\rm c},B) := &\frac{1}{16}
     \biggl\{
-      \left[1+\left(\tfrac{h-h_c}{2 B}\right)^2\right]^{-1}
-      +\left[1+\left(\tfrac{h-h_c}{4 B}\right)^2\right]^{-2}
-      +\left[1+\left(\tfrac{h-h_c}{6 B}\right)^2\right]^{-3}
-      +\left[1+\left(\tfrac{h-h_c}{7 B}\right)^2\right]^{-4}
+      \left[1+\left(\tfrac{h-h_{\rm c}}{2 B}\right)^2\right]^{-1}
+      +\left[1+\left(\tfrac{h-h_{\rm c}}{4 B}\right)^2\right]^{-2}
+      +\left[1+\left(\tfrac{h-h_{\rm c}}{6 B}\right)^2\right]^{-3}
+      +\left[1+\left(\tfrac{h-h_{\rm c}}{7 B}\right)^2\right]^{-4}
       \biggr\}^2,
 \end{aligned}
 ```
 
-defined as:
+implemented as:
 
 ```@docs	
 squirrel.metric.pEp

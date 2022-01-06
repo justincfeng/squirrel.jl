@@ -37,10 +37,10 @@ which may be formally written as
 A variable counting exercise reveals that
 ``F`` has ``12`` components; since there are a total of 12 undetermined
 quantities in the four initial velocities ``{\bf v}_I`` (each of which
-have three components), the condition ``F=0`` can thought of as a set of
+have three components), the condition ``F=0`` can be thought of as a set of
 ``12`` equations for the ``12`` unknowns ``{\bf v}_I``. Since the relevant 
 variables for the root finding algorithm are ``{\bf v}_I``, one may 
-suppress the arguments ``X_I`` to write 
+suppress the arguments ``X_I`` and write 
 ``f(v):=F(X_1,X_2,X_3,X_4,{\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)``, where 
 ``v:=({\bf v}_1,{\bf v}_2,{\bf v}_3,{\bf v}_4)`` represents the 
 concatenation of the vectors ``{\bf v}_I``. The squirrel algorithm
@@ -55,7 +55,7 @@ The squirrel algorithm is then summarized:
     initial velocities ``{\bf v}_I``.
 
 3.  Integrate the geodesics with the resulting initial velocities
-    ``{\bf v}_I`` and emission points ``X`` to find the intersection point.
+    ``{\bf v}_I`` from the emission points ``X`` to find the intersection point.
 
 A quasi-Newton Broyden algorithm (which will be described in detail
 below) is employed to do the root-finding; in such a method, the
@@ -178,14 +178,14 @@ squirrel.idf
 
 Finally, the `locator4` function computes the intersection point from a
 set of four emission points `X` by first employing the `idf` function to
-obtain the initial data for the geodesics, and integrates the geodesics
-(up to unit affine parameter ``λ``) to obtain the intersection point:
+obtain the initial data for the geodesics, and then integrating the geodesics
+(up to unit affine parameter ``λ``):
 
 ```@docs
 squirrel.locator4
 ```
 
-## Locator (``n_e>4`` emission points)
+## Locator (``n_{\rm e}>4`` emission points)
 
 If more than four emission points are available, the following function
 can generate ``C(n_{\rm e},4)`` sets of emission points (where ``C(n,k)`` is

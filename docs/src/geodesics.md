@@ -2,8 +2,8 @@
 
 ## Null Geodesics: Hamilton's equations
 
-Null geodesics in a spacetime geometry described by a metric ``g_{μν}``
-may be described by the Hamiltonian:
+For a spacetime geometry described by a metric ``g_{μν}`` and its
+inverse ``g^{μν}``, null geodesics may be described by the Hamiltonian:
 
 ```math
 H = \frac{1}{2} g^{μν} p_μ p_ν
@@ -18,10 +18,10 @@ and the associated Hamilton equations:
 \frac{dp_μ}{dλ} = - \frac{∂H}{∂x^μ}.
 ```
 
-The conjugate momenta ``p_μ`` are defined as:
+The conjugate momenta ``p_μ`` are given by:
 
 ```math
-p_μ := g_{μν} \frac{dx^ν}{dλ},
+p_μ = g_{μν} \frac{dx^ν}{dλ},
 ```
 
 and for null geodesics, the initial data satisfies:
@@ -31,8 +31,11 @@ and for null geodesics, the initial data satisfies:
 ```
 ```math
 \left. g_{μν}({x}_0) 
-\frac{dx^μ}{dλ}\frac{dx^ν}{dλ} \right|_{λ=0} = 0.
+\frac{dx^μ}{dλ}\frac{dx^ν}{dλ} \right|_{λ=0} = 0,
 ```
+
+where ``{\bf v}`` denotes the spatial components of the initial 
+four-velocity vector.
 
 The solution to Hamilton's equations is formally given by
 ``x^μ=x^μ(λ,{x}_0,{\bf v})`` (with ``x_0`` denoting the initial position
@@ -52,13 +55,13 @@ squirrel.HamGeo
 
 ### Hamilton's equations
 Hamilton's equations may be written in terms of the phase space
-coordinate ``z^α``, where ``z=(x,p)``.
+coordinate ``z^α``, where ``z=(x,p)``,
 
 ```math
 \frac{dz^α}{dλ} = J^{αβ} \frac{∂H}{∂z^β}.
 ```
 
-where ``J^{αβ}`` is the symplectic matrix, which has the block matrix
+Here ``J^{αβ}`` is the symplectic matrix, which has the block matrix
 form:
 
 ```math

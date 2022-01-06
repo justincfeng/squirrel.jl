@@ -193,7 +193,7 @@ run the evaluation script:
 
 which will evaluate the locator functions in `squirrel.jl` for 1000 test
 cases, and for the terrestrial positioning problem in four geometries:
-the Kerr-Schild metric, the Gordon metric for an analogue Gordon metric
+the Kerr-Schild metric, the Gordon metric for an analogue geometry
 modeling atmospheric and ionospheric effects and two perturbed Gordon
 metrics corresponding to fractional uncertainties of up ``1\%``  to
 ``10\%`` in the ionospheric electron density (and a ``0.1\%``
