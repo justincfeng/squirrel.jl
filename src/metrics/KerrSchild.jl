@@ -96,8 +96,9 @@ end     #---------------------------------------------------------------
     ge( X::RealVec )
 The `ge` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the components of the Kerr-Schild metric at 
-that point in a Kerr spacetime with relation between mass and angular 
-momentum roughly corresponding to the Earth value (``a=738GM``)
+that point in a Kerr spacetime with the product of gravitational 
+constant and mass ``GM=1`` and with rotation parameter ``a=738``
+(roughly corresponding to the Earth's angular momentum)
 """
 function ge( X::RealVec )
     tpfl=typeof(X[1])
