@@ -173,6 +173,6 @@ Xs = squirrel.locator4( XE[:,1:4] ,
 
 ne  = 6
 
-Xsc  = squirrel.locator(  XE , gk , 1e-10 , 24 , Double64 , 1e1 , ne )
+Xsc  = squirrel.locator(  XE , gk , 1e-10 , ne , 24 , 2e1 , Double64  )
 
 @test Xsc ≈ Xtar  atol=5e-14

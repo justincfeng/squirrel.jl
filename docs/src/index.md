@@ -74,8 +74,14 @@ computed with the `squirrel.locator` function:
     julia> Xs = squirrel.locator(X,gks,1e-10)
 
 The third argument is the tolerance for the geodesic solvers; the
-tolerance is looser here to minimize computation time. The accuracy of
-the result may be estimated by comparing `Xs` and `Xtar`:
+tolerance is looser here to minimize computation time. We remark that
+`squirrel.locator` may take some time to execute the first time it is
+called, since Julia employs 
+[`Just-In-Time`](https://en.wikipedia.org/wiki/Just-in-time_compilation)
+(JIT) compilation. Practically, this means that the first time a
+function is executed, additional time is required to compile the code.
+The accuracy of the result may be estimated by comparing `Xs` and
+`Xtar`:
 
     julia> ΔX = Xs-Xtar
 
@@ -140,9 +146,7 @@ One should then run the following commands:
     julia> (X,Xtar)   = squirrel.seval.pgen(6e9,gks,1e-14,6) ;
     julia> (Xn,Xntar) = squirrel.seval.pgen(6e9,g,1e-14,6)   ;
 
-Julia employs Just-In-Time (JIT) compilation. Practically, this means
-that the first time a function is executed, additional time is required
-to compile the code. For this reason, it is recommended that the
+Since Julia employs JIT compilation, it is recommended that the
 following functions are run first before performing execution time
 benchmarks:
 
