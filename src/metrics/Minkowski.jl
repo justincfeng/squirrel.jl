@@ -5,6 +5,13 @@
 #-----------------------------------------------------------------------
 #   THE MINKOWSKI PRODUCT (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
+"""
+    ηdot( V1::RealVec , V2::RealVec )
+
+The function `ηdot` takes two vectors, `V1` and `V2`, of arbitrary 
+dimension and calculates their Minkowski product ``η(V_1,V_2)``
+
+"""
 function ηdot( V1::RealVec , V2::RealVec )  # Computes Minkowski product
     nv1 = length(V1)
     nv2 = length(V2)
@@ -52,6 +59,13 @@ end      #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   THE MINKOWSKI METRIC (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
+"""
+    ημν( tpfl::DataType=Float64 , dim::Int=4 )
+
+The function `ημν` returns the components of a Minkowski metric of 
+dimension `dim` using the floating-point datatype `tpfl`
+
+"""
 function ημν( tpfl::DataType=Float64 , dim::Int=4 )
     gη = one(tpfl)*(I(dim))
 
@@ -63,6 +77,13 @@ end     #---------------------------------------------------------------
 #-----------------------------------------------------------------------
 #   KRONECKER DELTA 
 #-----------------------------------------------------------------------
+"""
+    δμν( tpfl::DataType=Float64 , dim::Int=4 )
+
+The function `δμν` returns the components of an identity matrix of 
+dimension `dim` using the floating-point datatype `tpfl`
+
+"""
 function δμν( tpfl::DataType=Float64 , dim::Int=4 )
     return one(tpfl)*(I(dim))
 end     #---------------------------------------------------------------
