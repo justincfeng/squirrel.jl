@@ -64,8 +64,8 @@ end     #---------------------------------------------------------------
 The `giso` function takes a point `X` in Cartesian coordinates and 
 calculates the the weak-field metric components for an Earth-like object
 with product of gravitational constant and mass ``GM=1``, quadrupole 
-moment ``J2=1.0826300e-3\times10^{-3}`` and equatorial radius 
-``a_{\rm ell}=1.438127773656399\times10^9``
+moment ``J_2=1.0826300\\times10^{-3}`` and equatorial radius 
+``a_{\\rm ell}=1.438127773656399\\times10^9``
 """
 function giso( X::RealVec )
 tpfl=typeof(X[1])
