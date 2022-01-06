@@ -36,15 +36,25 @@ or using the `ge` function for Earth-like parameters
 squirrel.metric.ge
 ```
 
-## Weak field metric
+## Weak-field metric
 
-For solar system and terrestrial positioning, the weak field metric
-suffices. The weak field metric has the form:
+For solar system and terrestrial positioning, the weak-field metric
+suffices. The weak-field metric has the form:
 ```math
 g_{\mu \nu} = \eta_{\mu \nu} - 2 \, V \, \delta_{\mu \nu},
 ```
 
-where ``V`` is the gravitational potential.
+where ``V`` is the gravitational potential, which can be evaluated using `Vpot` function:
+
+```@docs	
+squirrel.metric.Vpot
+```
+
+The components of the weak-field metric can be calculated using `giso` function
+
+```@docs	
+squirrel.metric.giso
+```
 
 ## Gordon metric
 
