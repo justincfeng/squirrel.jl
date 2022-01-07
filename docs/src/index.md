@@ -223,5 +223,5 @@ then run the edited scripts in the `scripts` folder.
 If you wish to use our code in your work, please cite the following 
 article:
 
-Feng, J. C., Hejda, F., Carloni, S., *Relativistic location algorithm in curved spacetime*, (2021)
+Feng, J. C., Hejda, F., Carloni, S., *Relativistic location algorithm in curved spacetime*, (2022)
 [\[arXiv:2201.01774\]](https://arxiv.org/abs/2201.01774)
