@@ -217,3 +217,11 @@ of test cases), one should make a copy of the repository, make changes
 to the files in the `scripts` folder of the repository (the parameters
 of the script `plotresults.jl` should be changed accordingly). One may
 then run the edited scripts in the `scripts` folder.
+
+## Reference
+
+If you wish to use our code in your work, please cite the following 
+article:
+
+Feng, J. C., Hejda, F., Carloni, S., *Relativistic location algorithm in curved spacetime*, (2021)
+[\[arXiv:2201.01774\]](https://arxiv.org/abs/2201.01774)
