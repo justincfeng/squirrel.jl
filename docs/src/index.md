@@ -171,22 +171,29 @@ line/terminal command `julia --threads 4`.
 
 Scripts are provided for a more comprehensive evaluation of the accuracy
 and performance of the functions in `squirrel.jl`. To find the scripts
-directory, run the command:
+directory, run the commands:
 
-    julia> pathscript = dirname(dirname(pathof(squirrel)))*"/scripts/"
+    julia> pathsquirrel = dirname(dirname(pathof(squirrel)))
 
-which should return a string with the path to the scripts directory.
-Before running the scripts, one should make the following directory
-(this will throw an error if a directory already exists):
+    julia> pathscript = pathsquirrel*"/scripts/"
+
+`pathsquirrel` is a string containing the path to the squirrel
+directory, and `pathscript` is a string containing the path to the
+scripts directory. Before running the scripts, one should make the
+following directory (this will throw an error if a directory already
+exists---this can be fixed by first removing the directory with the
+command
+`rm(dirname(dirname(pathof(squirrel)))*"/res/", recursive=true)`):
 
     julia> mkdir(dirname(dirname(pathof(squirrel)))*"/res/")
 
-To generate the samples, one should first change to the scripts directory
+To generate the samples, one should first change to the scripts
+directory
 
     julia> cd(pathscript)
 
-and then run the `samplegen.jl` script (which may require installation of
-the `CoordinateTransformations` and `LegendrePolynomials` packages):
+and then run the `samplegen.jl` script (which may require installation
+of the `CoordinateTransformations` and `LegendrePolynomials` packages):
 
     julia> include("samplegen.jl")
 
@@ -207,9 +214,10 @@ The results can be plotted with the scripts:
 
     julia> include("plotresults.jl")
 
-The results are located in the following `res` directory:
+The results are located in the following `res` directory, which is
+obtained from the following command:
 
-    julia> dirname(dirname(pathof(squirrel)))*"/res/"
+    julia> pathsquirrel*"/res/"
 
 If one wishes to change the parameters of the sample generation and
 evaluation scripts (for instance, if one wishes to increase the number
