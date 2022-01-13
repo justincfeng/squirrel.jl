@@ -8,7 +8,7 @@ using DoubleFloats
 include("type.jl")
 include("metrics/WeakFieldIso.jl")
 include("metrics/Minkowski.jl")
-include("srl/FHC21.jl")
+include("srl/FHC22.jl")
 include("srl/RTC21.jl")
 include("srl/mloc.jl")
 include("outlier.jl")
@@ -624,7 +624,7 @@ if d >= 5 && ne >= 5
     end
 elseif d == 4 || (d >= 4 && ne == 4)
     for i=1:N
-        (td.Xc[i] ,td.Xc2[i])   = locator4FHC21( td.X[i] )
+        (td.Xc[i] ,td.Xc2[i])   = locator4FHC22( td.X[i] )
         (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , tol , ne , nb ,
                                         ξ , Double64 )
         ΔXsq  = td.Xtar[i] - td.Xsc[i]

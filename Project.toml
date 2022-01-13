@@ -1,7 +1,7 @@
 name = "squirrel"
 uuid = "ddc0fec3-b12a-437f-a9ae-fa4d1221206f"
 authors = ["Justin C. Feng <justin.feng@tecnico.ulisboa.pt>"]
-version = "0.1.0"
+version = "1.0.0"
 
 [deps]
 LinearAlgebra   = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

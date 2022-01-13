@@ -13,7 +13,7 @@ include("outlier.jl")
 
 include("metric.jl")
 include("metrics/Minkowski.jl")
-include("srl/FHC21.jl")
+include("srl/FHC22.jl")
 include("srl/RTC21.jl")
 include("srl/mloc.jl")
 
@@ -263,7 +263,7 @@ function locator(  X::RealMtx , gfunc::Function , δ::Real , ne::Int=5 ,
         print("Need more than four emission points.")
         return zeros(tpfl,4)
     elseif l[2] == 4 || ne == 4 
-        Xdual   = locator4FHC21( tpflc.(X) )
+        Xdual   = locator4FHC22( tpflc.(X) )
         X1 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
         X2 = locator4( X , Xdual[2] , gfunc , δ , nb , false )
         return (X1,X2)
