@@ -226,10 +226,18 @@ to the files in the `scripts` folder of the repository (the parameters
 of the script `plotresults.jl` should be changed accordingly). One may
 then run the edited scripts in the `scripts` folder.
 
-## Reference
+### Citation
 
-If you wish to use our code in your work, please cite the following 
-article:
+If you use `squirrel.jl` in your work, please cite [this paper](https://arxiv.org/abs/2201.01774):
 
-Feng, J. C., Hejda, F., Carloni, S., *Relativistic location algorithm in curved spacetime*, (2022)
-[\[arXiv:2201.01774\]](https://arxiv.org/abs/2201.01774)
+```bib
+@article{Feng2022imj,
+    author = "Feng, Justin C. and Hejda, Filip and Carloni, Sante",
+    title = "{Relativistic location algorithm in curved spacetime}",
+    eprint = "2201.01774",
+    archivePrefix = "arXiv",
+    primaryClass = "gr-qc",
+    month = "1",
+    year = "2022"
+}
+```
