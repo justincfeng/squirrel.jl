@@ -1,4 +1,5 @@
 [![Build Status](https://github.com/justincfeng/squirrel.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/justincfeng/squirrel.jl/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5848833.svg)](https://doi.org/10.5281/zenodo.5848833)
 
 # squirrel.jl
 
