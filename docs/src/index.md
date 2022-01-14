@@ -231,7 +231,7 @@ then run the edited scripts in the `scripts` folder.
 If you use `squirrel.jl` in your work, please cite [this paper](https://arxiv.org/abs/2201.01774):
 
 ```bib
-@article{Feng2022imj,
+@article{Feng:2022imj,
     author = "Feng, Justin C. and Hejda, Filip and Carloni, Sante",
     title = "{Relativistic location algorithm in curved spacetime}",
     eprint = "2201.01774",
