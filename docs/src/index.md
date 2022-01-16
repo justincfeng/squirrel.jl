@@ -37,8 +37,8 @@ command to add `squirrel.jl`:
     pkg> add https://github.com/justincfeng/squirrel.jl/
 
 The package manager can be exited by pressing the backspace key. Once 
-the added, one may access the functions contained in the `squirrel` 
-module with the following command:
+the package has been added, one may access the functions contained in 
+the `squirrel` module with the following command:
 
     julia> using squirrel
 
