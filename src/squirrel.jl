@@ -255,22 +255,22 @@ function locator(  X::RealMtx , gfunc::Function , δ::Real , ne::Int=5 ,
                    tpflc::DataType=Double64 )
     tpfl  = typeof(X[1,1])
 
-    l = size(X)
+    l = size(X)[2]
 
     if gfunc == x->ημν(x)
         return mlocator( tpflc.(X) )
-    elseif  l[2] < 4 || ne < 4
+    elseif  l < 4 || ne < 4
         print("Need more than four emission points.")
         return zeros(tpfl,4)
-    elseif l[2] == 4 || ne == 4 
+    elseif l == 4 || ne == 4 
         Xdual   = locator4FHC22( tpflc.(X) )
         X1 = locator4( X , Xdual[1] , gfunc , δ , nb , false )
         X2 = locator4( X , Xdual[2] , gfunc , δ , nb , false )
         return (X1,X2)
-    elseif l[2] >= 5
-        if  ne >= 5 && ne < size(X)[2]
+    elseif l >= 5
+        if  ne >= 5 && ne < l
             Y = X[:,1:ne]
-        elseif size(X)[2] == 5 || ne >= size(X)[2]
+        elseif l == 5 || ne >= l
             Y = X
         end
 
