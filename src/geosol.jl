@@ -179,25 +179,26 @@ The function `solveZ` outputs only the endpoint of the solution for the
 geodesic equation.
 
 """
-function solveZ( Z0::RealVec , gfunc::Function , δ1::Real , δ2::Real 
-                 , integrator=AutoVern7(Rodas5()) , δt=0 )
-    tpfl=typeof(Z0[1])
+function solveZ( Z0::RealVec , gfunc::Function , δ1::Real , δ2::Real , 
+    integrator=AutoVern7(Rodas5()) , δt=0 ; 
+    cb=CallbackSet() )
+tpfl=typeof(Z0[1])
 
-    tspan = (0.0,1.0) 
+tspan = (0.0,1.0) 
 
-    Zo = vcat(Z0[1:4],gfunc(Z0[1:4])*Z0[5:8]) # Lowering index of p 
+Zo = vcat(Z0[1:4],gfunc(Z0[1:4])*Z0[5:8]) # Lowering index of p 
 
-    F = (dZ,Z,p,t)->ZF!( dZ , Z , gfunc )
+F = (dZ,Z,p,t)->ZF!( dZ , Z , gfunc )
 
-    if δt == 0
-        slv = solve( ODEProblem(F,Zo,tspan),integrator,reltol=δ1
-                 ,abstol=δ2,save_everystep=false )
-    else
-        slv = solve( ODEProblem(F,Zo,tspan),integrator,reltol=δ1
-                 ,abstol=δ2,dt=δt,save_everystep=false )
-    end
-    
-    return last(slv.u)
+if δt == 0
+slv = solve( ODEProblem(F,Zo,tspan),integrator,reltol=δ1
+    ,abstol=δ2,save_everystep=false,callback=cb)
+else
+slv = solve( ODEProblem(F,Zo,tspan),integrator,reltol=δ1
+    ,abstol=δ2,dt=δt,save_everystep=false,callback=cb )
+end
+
+return last(slv.u)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
