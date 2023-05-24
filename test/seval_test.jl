@@ -198,6 +198,22 @@ ntest = 5
 
 P = squirrel.seval.pgen( 6e9 , η , 1e-14 , ne , Δψ0 )
 
+X1=(P[1])[:,1]
+X2=(P[1])[:,2]
+X3=(P[1])[:,3]
+X4=(P[1])[:,4]
+X5=(P[1])[:,5]
+X6=(P[1])[:,6]
+
+tolp=1e-3
+
+@test norm(X1[2:4]) - 6e9 ≈ 0. atol=tolp
+@test norm(X2[2:4]) - 6e9 ≈ 0. atol=tolp
+@test norm(X3[2:4]) - 6e9 ≈ 0. atol=tolp
+@test norm(X4[2:4]) - 6e9 ≈ 0. atol=tolp
+@test norm(X5[2:4]) - 6e9 ≈ 0. atol=tolp
+@test norm(X6[2:4]) - 6e9 ≈ 0. atol=tolp
+
 @test size(P[1]) == (4,ne)
 @test size(P[2]) == (4,)
 
