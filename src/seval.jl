@@ -354,6 +354,19 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
+    RsCallback( Rf::Function , Rs::Real )
+
+The `RsCallback` function takes as input, a radial function `Rf` (which
+takes a spatial 3-vector `x` as input), and a termination radius `Rs`,
+and returns a callback condition. The condition for integration
+termination is `Rf(x)-Rs=0`.
+"""
+function RsCallback( Rf::Function , Rs::Real )
+    return  (u,t,integrator)->Rf(u[2:4])-Rs
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+"""
     x3gen(tpfl::DataType=Float64)
 
 The `x3gen` function generates a random 3-component position vector of
@@ -426,16 +439,20 @@ function pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 ,
     vi  = zeros(tpfl,3,ne)
     λi  = zeros(tpfl,ne)
 
+    integrator = AutoVern9(Rodas5())
+    effect!(integrator) = terminate!(integrator)
+
     for i=1:ne
         B = true
         while B
             vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
-            λi[i]   = λiRscalc(xi/rell(xi),vi[:,i],rell(xi),Rs)
+            λi[i]   = 2*λiRscalc(xi/rell(xi),vi[:,i],rell(xi),Rs)
             vi[:,i] = λi[i]*vi[:,i]
 
             Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
             Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
-                              , AutoVern9(Rodas5()) )
+                              , integrator 
+            , cb=ContinuousCallback(RsCallback(x->norm(x),Rs),effect!) )
             X[:,i]  = Z[1:4,i]
 
             # Check spacelike separation
