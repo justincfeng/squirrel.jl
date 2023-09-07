@@ -361,8 +361,8 @@ takes a spatial 3-vector `x` as input), and a termination radius `Rs`,
 and returns a callback condition. The condition for integration
 termination is `Rf(x)-Rs=0`.
 """
-function RsCallback( Rf::Function , Rs::Real )
-    return  (u,t,integrator)->Rf(u[2:4])-Rs
+function RsCallback( Rf::Function , Rs::Function )
+    return  (u,t,integrator)->Rf(u[2:4])-Rs(u[2:4])
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -419,7 +419,7 @@ end     #---------------------------------------------------------------
 The `pgen` function generates a target point `Xtar` and `ne` emission
 points in a `4×ne` matrix `X` such that the points in `X` lie on the
 past light cone of `Xtar` with respect to the metric `gfunc`, and have
-spatial radii values of `~Rs` (defined with respect to spatial origin).
+spatial radii values of `Rs` (defined with respect to spatial origin).
 The parameter `tol` is the tolerance parameter for the integration. This
 function returns the tuple `(X,Xtar)`.
 
@@ -452,7 +452,72 @@ function pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 ,
             Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
             Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
                               , integrator 
-            , cb=ContinuousCallback(RsCallback(x->norm(x),Rs),effect!) )
+            , cb=ContinuousCallback(RsCallback(x->norm(x),x->Rs),
+                                    effect!) )
+            X[:,i]  = Z[1:4,i]
+
+            # Check spacelike separation
+            if i==1
+                B = false
+            elseif i>1 && i<4
+                if slchk( X[:,1:i] )
+                    B = false
+                end
+            elseif i>=4
+                if slchk(X[:,1:i])
+                    B = false
+                end
+            end
+        end
+    end
+
+    return ( X , Zi[1:4,1] )
+end     #---------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+"""
+    pgenrev( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+          Δψ::Real=Δψ0 )
+
+The `pgen` function generates a target point `Xtar` at a spatial radius
+of `Rs` (defined with respect to spatial origin) and `ne` emission
+points in a `4×ne` matrix `X` such that the points in `X` lie on the
+past light cone of `Xtar` with respect to the metric `gfunc`, and have
+spatial radii values that lie on the WGS84 reference ellipsoid defined
+by the function `rell`. The parameter `tol` is the tolerance parameter
+for the integration. This function returns the tuple `(X,Xtar)`.
+
+"""
+function pgenrev( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+               Δψ::Real=Δψ0 )
+    tpfl=typeof(Rs)
+
+    Z   = zeros(tpfl,8,ne)
+    Zi  = zeros(tpfl,8,ne)
+
+    X   = zeros(tpfl,4,ne)
+
+    Xc  = zeros(tpfl,4,4)
+
+    xi  = x3gen(tpfl)
+    vi  = zeros(tpfl,3,ne)
+    λi  = zeros(tpfl,ne)
+
+    integrator = AutoVern9(Rodas5())
+    effect!(integrator) = terminate!(integrator)
+
+    for i=1:ne
+        B = true
+        while B
+            vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
+            λi[i]   = 2*λiRscalc(xi/Rs,vi[:,i],Rs,rell(xi))
+            vi[:,i] = -λi[i]*vi[:,i]
+
+            Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
+            Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
+                              , integrator 
+            , cb=ContinuousCallback(RsCallback(x->norm(x),x->rell(x)),
+                                    effect!) )
             X[:,i]  = Z[1:4,i]
 
             # Check spacelike separation
