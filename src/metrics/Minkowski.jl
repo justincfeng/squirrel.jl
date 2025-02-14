@@ -62,23 +62,23 @@ end     #---------------------------------------------------------------
 #   THE MINKOWSKI METRIC (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
 """
-    ημν( tpfl::DataType=Float64 , dim::Int=4 )
+    ημν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
 
 The function `ημν` constructs the components of the Minkowski metric.
 The first argument `tpfl` specifies the floating point datatype
-(typically Float64 or Double64 if one uses the DoubleFloats package) and
-the second argument `dim` specifies the dimension. The default values
-are `tpfl=Float64` and `dim=4`:
+(typically Float64 or Double64 if one uses the DoubleFloats package),
+the second argument `dim` specifies the dimension, and the third argument
+`p` is an optional parameter vector (included for API consistency but not used
+since Minkowski metric is parameter-free). The default values
+are `tpfl=Float64`, `dim=4`, and `p=nothing`:
 
-    julia> ημν() == ημν( Float64 , 4 )
+    julia> ημν() == ημν( Float64 , 4 , nothing )
         true
 
 """
-function ημν( tpfl::DataType=Float64 , dim::Int=4 )
+function ημν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
     gη = one(tpfl)*(I(dim))
-
     gη[1,1] = -gη[1,1]
-
     return Matrix(gη)
 end     #---------------------------------------------------------------
 
@@ -86,13 +86,14 @@ end     #---------------------------------------------------------------
 #   KRONECKER DELTA 
 #-----------------------------------------------------------------------
 """
-    δμν( tpfl::DataType=Float64 , dim::Int=4 )
+    δμν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
 
 The function `δμν` returns the components of an identity matrix of 
-dimension `dim` using the floating-point datatype `tpfl`
-
+dimension `dim` using the floating-point datatype `tpfl`. The parameter
+vector `p` is included for API consistency but not used since the identity
+matrix is parameter-free.
 """
-function δμν( tpfl::DataType=Float64 , dim::Int=4 )
+function δμν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
     return one(tpfl)*(I(dim))
 end     #---------------------------------------------------------------
 

@@ -8,16 +8,17 @@
 
 #-----------------------------------------------------------------------
 """
-    rsq( X::RealVec , a::Real )
+    rsq( X::RealVec , p::RealVec )
 The `rsq` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the value of ``r^2`` at that point in a
-Kerr spacetime with rotation parameter `a`
+Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
 """
-function rsq( X::RealVec , a::Real )
+function rsq( X::RealVec , p::RealVec )
     tpfl=typeof(X[1])
     x = X[2]
     y = X[3]
     z = X[4]
+    a = p[1]  # rotation parameter
 
     return ( -a^2 + x^2 + y^2 + z^2 + sqrt(4*(a^2)*(z^2) 
              + (-a^2 + x^2 + y^2 + z^2)^2))/2
@@ -25,39 +26,42 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    fks( X::RealVec , a::Real , GM::Real=1 )
+    fks( X::RealVec , p::RealVec )
 The `fks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the value of function ``f`` at that point in 
-a Kerr spacetime with rotation parameter `a` and with the product of
-gravitational constant and mass `GM`
+a Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
+and p[2] is GM (product of gravitational constant and mass)
 """
-function fks( X::RealVec , a::Real , GM::Real=1 )
+function fks( X::RealVec , p::RealVec )
     tpfl=typeof(X[1])
     x = X[2]
     y = X[3]
     z = X[4]
+    a = p[1]   # rotation parameter
+    GM = p[2]  # mass parameter
 
-    rs = rsq(X,a)
+    rs = rsq(X,p)
     r = sqrt(rs)
     return 2*GM*rs*r/(rs^2+(a^2)*(z^2))
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    kks( X::RealVec , a::Real )
+    kks( X::RealVec , p::RealVec )
 The `kks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the tensor product ``k_\\mu k_\\nu`` at that 
-point in a Kerr spacetime with rotation parameter `a`
+point in a Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
 """
-function kks( X::RealVec , a::Real )
+function kks( X::RealVec , p::RealVec )
     tpfl=typeof(X[1])
     k = zeros(tpfl,4)
     kk = zeros(tpfl,4,4)
     x = X[2]
     y = X[3]
     z = X[4]
+    a = p[1]  # rotation parameter
 
-    rs = rsq(X,a)
+    rs = rsq(X,p)
     r = sqrt(rs)
 
     k[1] = one(tpfl)
@@ -79,16 +83,16 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    gks( X::RealVec , a::Real=0 , GM::Real=1 )
+    gks( X::RealVec , p::RealVec )
 The `gks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the components of the Kerr-Schild metric at 
-that point in a Kerr spacetime with rotation parameter `a` and with the 
-product of gravitational constant and mass `GM`
+that point in a Kerr spacetime with parameters `p` where:
+- p[1] is the rotation parameter a
+- p[2] is GM (product of gravitational constant and mass)
 """
-function gks( X::RealVec , a::Real=0 , GM::Real=1 )
+function gks( X::RealVec , p::RealVec )
     tpfl=typeof(X[1])
-
-    return ημν(tpfl) + fks(X,a,GM)*kks(X,a)
+    return ημν(tpfl) + fks(X,p)*kks(X,p)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
@@ -96,19 +100,14 @@ end     #---------------------------------------------------------------
     ge( X::RealVec )
 The `ge` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the components of the Kerr-Schild metric at 
-that point in a Kerr spacetime with the product of gravitational 
-constant and mass ``GM=1`` and with rotation parameter ``a=738``
-(roughly corresponding to the Earth's angular momentum)
+that point in a Kerr spacetime with default Earth parameters:
+- rotation parameter a = 738 (roughly corresponding to Earth's angular momentum)
+- GM = 1 (product of gravitational constant and mass)
 """
 function ge( X::RealVec )
     tpfl=typeof(X[1])
-
-    a = tpfl(738)   #   This is the roughly the rotation parameter 
-                    #   for Earth in units where M_Earth = 1
-                    #   For reference, the avg radius of Earth is
-                    #   1.437e9
-
-    return gks(X,a,1)  
+    p = [tpfl(738), tpfl(1)]  # [a, GM]
+    return gks(X,p)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
