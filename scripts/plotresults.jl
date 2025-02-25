@@ -13,8 +13,8 @@ include("plotfunc.jl")
 #       PLOT PARAMETERS
 #-----------------------------------------------------------------------
 
-Neval	= 1000                  # Evaluated test cases (for filenames)
-N	= 1000                  # Number of test cases to plot
+Neval	= 100                  # Evaluated test cases (for filenames)
+N	= 100                  # Number of test cases to plot
 
 pfx     = "td"                  # Filename string prefix
 sufx 	= ""                    # Filename string suffix
@@ -40,9 +40,9 @@ ne	= 5
 	
 #-----------------------------------------------------------------------
 
-δ1	= 0.001                 # Atmospheric perturbation parameter
-δ2	= 0.10                  # Ionospheric perturbation parameter
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100))) # Filename str.
+δ1L	= 0.001                 # Atmospheric perturbation parameter
+δ2L	= 0.10                  # Ionospheric perturbation parameter
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2L*100))) # Filename str.
 
 tdLtup	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
 tdL     = squirrel.seval.tup2td( tdLtup )
@@ -78,9 +78,9 @@ PlotErr( v , (ers[2],ers[5]) , histpar , xrange , yrange , labelsv ,
 
 #-----------------------------------------------------------------------
 
-δ1	= 0.001                 # Atmospheric perturbation parameter
-δ2	= 0.01                  # Ionospheric perturbation parameter
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100))) # Filename str.
+δ1S	= 0.001                 # Atmospheric perturbation parameter
+δ2S	= 0.01                  # Ionospheric perturbation parameter
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2S*100))) # Filename str.
 
 tdStup	= Serialization.deserialize(dir*pfx*"-"*Ns*"-"*sfx*sufx)
 tdS     = squirrel.seval.tup2td( tdStup )

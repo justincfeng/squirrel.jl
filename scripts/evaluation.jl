@@ -12,8 +12,8 @@ include("../src/metric.jl")
 g  	= metric.g          # Gordon metric with standard parameters
 gk 	= metric.gks         # Kerr-Schild with Earth parameters
 
-Neval	= 1000          # Number of test cases to evaluate
-Nsamp	= 1000          # Number of test cases in generated sample file
+Neval	= 100          # Number of test cases to evaluate
+Nsamp	= 100          # Number of test cases in generated sample file
 
 nb      = 24            # Number of steps for Broyden solver
 tol	    = 1e-10         # Tolerance for ODE solver (OrdinaryDiffEq.jl)
@@ -58,30 +58,32 @@ h0i  = tpfl[  150  ;  200  ;  250  ;  300  ;  350  ]
 σi   = tpfl[  21   ;  15   ;  18   ;  21   ;  10   ]
 	
 pfx  = "td"         # Prefix for filename
+
+# Atmospheric and ionospheric perturbation model
+Patm 	= h->metric.P(h,h0a,σa)
+Pion 	= h->metric.P(h,h0i,σi)
+#Patm=h->1.0
+#Pion=h->1.0
+
+# Perturbed metric
+gp 	= (x,p=p0)->metric.gp(x,p,Patm,Pion)
 	
 #-----------------------------------------------------------------------
 
 # Fractional uncertainty of atmospheric n due to temperature and 
 # pressure uncertainties
-δ1	= 0.001
+δ1L	= 0.001
 
 # Fractional uncertainty of ionospheric n 
-δ2	= 0.10
-
-# Atmospheric and ionospheric perturbation model
-#Patm 	= h->metric.P(h,h0a,σa)
-#Pion 	= h->metric.P(h,h0i,σi)
-Patm=h->1.0
-Pion=h->1.0
+δ2L	= 0.10
 
 # Perturbed metric
-p0  = vcat(metric.EARTH_ISO_PARAMS, [δ1, δ2])
-gp 	= (x,p=p0)->metric.gp(x,p,Patm,Pion)
+pL  = vcat(metric.EARTH_ISO_PARAMS, [δ1L, δ2L])
 
 # Run evaluation function
-tdL = squirrel.seval.main(tc,squirrel.locator,gp,p0,Neval,tpfl,tol,ξ,nb,ne)
+tdL = squirrel.seval.main(tc,squirrel.locator,gp,pL,Neval,tpfl,tol,ξ,nb,ne)
 	
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))    # Filename suffix
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2L*100)))    # Filename suffix
 
 tdLtup = squirrel.seval.td2tup( tdL )
 	
@@ -89,15 +91,14 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdLtup)
 	
 #-----------------------------------------------------------------------
 	
-δ1	= 0.001
-δ2	= 0.01
+δ1S	= 0.001
+δ2S	= 0.01
 
-p0  = vcat(metric.EARTH_ISO_PARAMS, [δ1, δ2])
-gp 	= (x,p=p0)->metric.gp(x,p,Patm,Pion)
+pS  = vcat(metric.EARTH_ISO_PARAMS, [δ1S, δ2S])
 
-tdS = squirrel.seval.main(tc,squirrel.locator,gp,p0,Neval,tpfl,tol,ξ,nb,ne)
+tdS = squirrel.seval.main(tc,squirrel.locator,gp,pS,Neval,tpfl,tol,ξ,nb,ne)
 	
-sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
+sfx	= "n"*string(ne)*"p"*string(Int(round(δ2S*100)))
 
 tdStup = squirrel.seval.td2tup( tdS )
 	

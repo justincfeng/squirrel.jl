@@ -15,7 +15,7 @@ p_ks = metric.EARTH_KS_PARAMS
 g = (x,p=p_iso)->metric.g(x,p)
 gk = (x,p=p_ks)->metric.gks(x,p)
 
-Nsamp   = 1000
+Nsamp   = 100
 
 nb	= 24
 tol	= 1e-14
