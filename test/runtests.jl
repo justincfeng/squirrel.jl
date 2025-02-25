@@ -9,12 +9,13 @@ include("testfunctions.jl")
 
 include("../src/metrics/Minkowski.jl")
 include("../src/metrics/KerrSchild.jl")
+include("../src/metric.jl")
 include("../src/geosol.jl")
 include("../src/broyden.jl")
 include("../src/outlier.jl")
 include("../src/squirrel.jl")
 
-η = X -> ημν(typeof(X[1]),4)
+η = (X,p=Float64[]) -> ημν(typeof(X[1]),p)
 
 @testset "All tests:" begin
 

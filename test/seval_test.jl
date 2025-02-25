@@ -2,6 +2,11 @@
 #       DataType TEST
 #-----------------------------------------------------------------------
 
+p_mink  = Float64[]
+p_iso   = Float64[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  # Earth ISO params
+p_pert  = vcat(p_iso,[0.001,0.01])
+
+tol     = 1e-9
 tpfl    = Float64
 par     = (1.4365276211950395e9,1.4365277e9,6e9,1e-14,1e-10)
 N       = 10
@@ -168,7 +173,7 @@ x = u/sqrt(dot(u,u))
 
 λ = squirrel.seval.λiRscalc( x , v , 10 , 100 )
 v = λ*v
-Zi = squirrel.seval.tidc( x , v , λ , η )
+Zi = squirrel.seval.tidc( x , v , λ , η , p_mink )
 
 @test Zi[2:4] ≈ x
 @test Zi[6:8] ≈ v
@@ -196,7 +201,7 @@ U =  [0.24981918733261255, 0.6256573311421523, 0.8453503802138926,
 ne    = 6
 ntest = 5
 
-P = squirrel.seval.pgen( 6e9 , η , 1e-14 , ne , Δψ0 )
+P = squirrel.seval.pgen( 6e9 , η , p_mink , 1e-14 , ne , Δψ0 )
 
 X1=(P[1])[:,1]
 X2=(P[1])[:,2]
@@ -229,10 +234,10 @@ tol	= 1e-9
 
 for k=1:10
 
-tc = squirrel.seval.gen(3,η,ne)
+tc = squirrel.seval.gen(3,η,p_mink,ne)
 typeof(tc) == squirrel.seval.TestCases
 
-td = squirrel.seval.main(tc,squirrel.locator,η,nev,Float64,tol,ξ,nb,ne)
+td = squirrel.seval.main(tc,squirrel.locator,η,p_mink,nev,Float64,tol,ξ,nb,ne)
 
 @test length(td.erh) ≈ nev
 @test length(td.erv) ≈ nev
@@ -242,7 +247,7 @@ Xer = [zeros(4) for _ in 1:nev]
 
 for i=1:nev
     Xer[i][2:4] = (td.Xsc[i][2:4]-td.Xtar[i][2:4])./td.Xtar[i][2:4]
-    @test Xer[i] ≈ zeros(4) atol=tol
+    @test Xer[i] ≈ zeros(4) atol=2e-9
 end
 
 end

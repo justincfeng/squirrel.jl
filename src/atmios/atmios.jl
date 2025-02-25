@@ -150,7 +150,7 @@ function nIR( X::RealVec , Δnf::Function=Δntot )
 
     xs = SphericalFromCartesian()(X[2:4])
 
-    return  nIRs( rell(X[2:4]) , norm(X[2:4]) , xs.θ , xs.ϕ 
+    return  nIRs( rell(X[2:4], [6.378137e6, 6.356752314245e6]) , norm(X[2:4]) , xs.θ , xs.ϕ 
                   , Δnf )
 end     #---------------------------------------------------------------
 

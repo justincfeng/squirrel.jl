@@ -377,22 +377,22 @@ function x3gen(tpfl::DataType=Float64)
     x   = tpfl[ 1 ; 0 ; 0 ]
     rot = roteuler(tpfl)
     x = rot[1]*x
-    return x*rell(x)
+    return x*rell(x, [6378137.0, 6356752.314245])  # WGS84 Earth parameters
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function )
+    tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function , p )
 
 The `tidc` function generates initial data for null geodesics given a
 position vector `x`, velocity vector `v`, affine parameter `λ`, and a
 metric function `gfunc`.
 
 """
-function tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function )
+function tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function , p )
     tpfl=typeof(x[1])
 
-    X = zeros(tpfl,4)
+    X = zeros(tpfl,4) 
     V = zeros(tpfl,4)
 
     X[2:4] = x
@@ -400,7 +400,7 @@ function tidc( x::RealVec , v::RealVec , λ::Real , gfunc::Function )
 
     V[1] = -λ
 
-    V = nullenforcerp( V , X , gfunc )
+    V = nullenforcerp( V , X , gfunc , p )
 
     return vcat(X,V)
 end     #---------------------------------------------------------------
@@ -413,7 +413,7 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+    pgen( Rs::Real , gfunc::Function , p , tol::Real , ne::Int=4 , 
           Δψ::Real=Δψ0 )
 
 The `pgen` function generates a target point `Xtar` and `ne` emission
@@ -424,7 +424,7 @@ The parameter `tol` is the tolerance parameter for the integration. This
 function returns the tuple `(X,Xtar)`.
 
 """
-function pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+function pgen( Rs::Real , gfunc::Function , p , tol::Real , ne::Int=4 , 
                Δψ::Real=Δψ0 )
     tpfl=typeof(Rs)
 
@@ -446,11 +446,11 @@ function pgen( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 ,
         B = true
         while B
             vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
-            λi[i]   = 2*λiRscalc(xi/rell(xi),vi[:,i],rell(xi),Rs)
+            λi[i]   = 2*λiRscalc(xi/rell(xi, [6378137.0, 6356752.314245]),vi[:,i],rell(xi, [6378137.0, 6356752.314245]),Rs)
             vi[:,i] = λi[i]*vi[:,i]
 
-            Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
-            Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
+            Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc , p )
+            Z[:,i]  = solveZ( Zi[:,i] , gfunc , p , tol , tol 
                               , integrator 
             , cb=ContinuousCallback(RsCallback(x->norm(x),x->Rs),
                                     effect!) )
@@ -476,7 +476,7 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    pgenrev( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+    pgenrev( Rs::Real , gfunc::Function , p , tol::Real , ne::Int=4 , 
           Δψ::Real=Δψ0 )
 
 The `pgen` function generates a target point `Xtar` at a spatial radius
@@ -488,7 +488,7 @@ by the function `rell`. The parameter `tol` is the tolerance parameter
 for the integration. This function returns the tuple `(X,Xtar)`.
 
 """
-function pgenrev( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 , 
+function pgenrev( Rs::Real , gfunc::Function , p , tol::Real , ne::Int=4 , 
                Δψ::Real=Δψ0 )
     tpfl=typeof(Rs)
 
@@ -510,14 +510,13 @@ function pgenrev( Rs::Real , gfunc::Function , tol::Real , ne::Int=4 ,
         B = true
         while B
             vi[:,i] = vrgen( one(tpfl) , Δψ , xi )
-            λi[i]   = 2*λiRscalc(xi/Rs,vi[:,i],Rs,rell(xi))
-            vi[:,i] = -λi[i]*vi[:,i]
+            λi[i]   = 2*λiRscalc(xi/rell(xi, [6378137.0, 6356752.314245]),vi[:,i],rell(xi, [6378137.0, 6356752.314245]),Rs)
+            vi[:,i] = λi[i]*vi[:,i]
 
-            Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc )
-            Z[:,i]  = solveZ( Zi[:,i] , gfunc , tol , tol 
+            Zi[:,i] = tidc( xi , vi[:,i] , λi[i] , gfunc , p )
+            Z[:,i]  = solveZ( Zi[:,i] , gfunc , p , tol , tol 
                               , integrator 
-            , cb=ContinuousCallback(RsCallback(x->norm(x),x->rell(x)),
-                                    effect!) )
+            , cb=ContinuousCallback(RsCallback(x->norm(x),x->rell(x, [6378137.0, 6356752.314245])),effect!) )
             X[:,i]  = Z[1:4,i]
 
             # Check spacelike separation
@@ -546,7 +545,7 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    gen( N::Int , g::Function , ne::Int=4 , Δψ::Real=Δψ0 
+    gen( N::Int , g::Function , p , ne::Int=4 , Δψ::Real=Δψ0 
               , tpfl::DataType=Float64 
               , REs ::  Real=1.4365276211950395e9       # Earth radius
               , RR  ::  Real=1.4365277e9    # Just above Earth surface
@@ -560,7 +559,7 @@ emission points `X` with respect to the metric `gfunc`. This function
 returns a quantity of the TestCases datatype.
 
 """
-function gen( N::Int , g::Function , ne::Int=4 , Δψ::Real=Δψ0 
+function gen( N::Int , g::Function , p , ne::Int=4 , Δψ::Real=Δψ0 
               , tpfl::DataType=Float64 
               , REs ::  Real=1.4365276211950395e9       # Earth radius
               , RR  ::  Real=1.4365277e9    # Just above Earth surface
@@ -575,7 +574,7 @@ tc = TestCases(  par , N , ne , [zeros(tpfl,4,ne) for _ in 1:N]
                         , [zeros(tpfl,4) for _ in 1:N] )
 
 for i=1:N 
-    ZZ          = pgen( Rs , g , tolh , ne , Δψ )
+    ZZ          = pgen( Rs , g , p , tolh , ne , Δψ )
     tc.X[i]     = ZZ[1]
     tc.Xtar[i]  = ZZ[2]
     print("\r$i")
@@ -649,7 +648,7 @@ tolerance, outlier detection threshold, number of steps for the Broyden
 algorithm, and number of emission points.
 
 """
-function main(  tc::TestCases , sloc::Function , g::Function , 
+function main(  tc::TestCases , sloc::Function , g::Function , p , 
                 Nx::Int=-1 , tpfl::DataType=Float64 , tol::Real=1e-10 , 
                 ξ::Real=2e1 , nb::Int=24 , ne::Real=6 )
 tc2     = tcfl(tc,tpfl)
@@ -691,7 +690,7 @@ td = TestData( par , N , tc2.X , tc2.Xtar
 if d >= 5 && ne >= 5
     for i=1:N
         td.Xc[i]    = mlocator( td.X[i] )
-        td.Xsc[i]   = sloc( td.X[i] , g , tol , ne , nb , ξ , Double64 )
+        td.Xsc[i]   = sloc( td.X[i] , g , p , tol , ne , nb , ξ , Double64 )
         ΔXsq = td.Xtar[i] - td.Xsc[i]
         ΔXcr = td.Xtar[i] - td.Xc[i]
 
@@ -707,7 +706,7 @@ if d >= 5 && ne >= 5
 elseif d == 4 || (d >= 4 && ne == 4)
     for i=1:N
         (td.Xc[i] ,td.Xc2[i])   = locator4FHC22( td.X[i] )
-        (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , tol , ne , nb ,
+        (td.Xsc[i],td.Xsc2[i])  = sloc( td.X[i] , g , p , tol , ne , nb ,
                                         ξ , Double64 )
         ΔXsq  = td.Xtar[i] - td.Xsc[i]
         ΔXcr  = td.Xtar[i] - td.Xc[i]

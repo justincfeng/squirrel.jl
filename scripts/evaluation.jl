@@ -6,11 +6,11 @@
 
 using LinearAlgebra, Serialization, BenchmarkTools
 
-#include("../src/squirrel.jl")
+include("../src/squirrel.jl")
 include("../src/metric.jl")
 
 g  	= metric.g          # Gordon metric with standard parameters
-gk 	= metric.ge         # Kerr-Schild with Earth parameters
+gk 	= metric.gks         # Kerr-Schild with Earth parameters
 
 Neval	= 1000          # Number of test cases to evaluate
 Nsamp	= 1000          # Number of test cases in generated sample file
@@ -69,14 +69,17 @@ pfx  = "td"         # Prefix for filename
 δ2	= 0.10
 
 # Atmospheric and ionospheric perturbation model
-Patm 	= h->metric.P(h,h0a,σa)
-Pion 	= h->metric.P(h,h0i,σi)
+#Patm 	= h->metric.P(h,h0a,σa)
+#Pion 	= h->metric.P(h,h0i,σi)
+Patm=h->1.0
+Pion=h->1.0
 
 # Perturbed metric
-gp 	    = x->metric.gp(x,δ1,δ2,Patm,Pion)
+p0  = vcat(metric.EARTH_ISO_PARAMS, [δ1, δ2])
+gp 	= (x,p=p0)->metric.gp(x,p,Patm,Pion)
 
 # Run evaluation function
-tdL = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
+tdL = squirrel.seval.main(tc,squirrel.locator,gp,p0,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))    # Filename suffix
 
@@ -88,8 +91,11 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdLtup)
 	
 δ1	= 0.001
 δ2	= 0.01
-gp 	= x->metric.gp(x,δ1,δ2)
-tdS = squirrel.seval.main(tc,squirrel.locator,gp,Neval,tpfl,tol,ξ,nb,ne)
+
+p0  = vcat(metric.EARTH_ISO_PARAMS, [δ1, δ2])
+gp 	= (x,p=p0)->metric.gp(x,p,Patm,Pion)
+
+tdS = squirrel.seval.main(tc,squirrel.locator,gp,p0,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p"*string(Int(round(δ2*100)))
 
@@ -99,7 +105,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,tdStup)
 	
 #-----------------------------------------------------------------------
 	
-td0 = squirrel.seval.main(tc,squirrel.locator,g,Neval,tpfl,tol,ξ,nb,ne)
+td0 = squirrel.seval.main(tc,squirrel.locator,g,metric.EARTH_ISO_PARAMS,Neval,tpfl,tol,ξ,nb,ne)
 	
 sfx	= "n"*string(ne)*"p0"
 
@@ -109,7 +115,7 @@ Serialization.serialize(dir*pfx*"-"*Nes*"-"*sfx*sufx,td0tup)
 	
 #-----------------------------------------------------------------------
 
-tdk = squirrel.seval.main(tck,squirrel.locator,gk,Neval,tpfl,tol,ξ,nb,
+tdk = squirrel.seval.main(tck,squirrel.locator,gk,metric.EARTH_KS_PARAMS,Neval,tpfl,tol,ξ,nb,
                           ne)
 	
 sfx	= "n"*string(ne)*"k"

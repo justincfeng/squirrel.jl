@@ -4,11 +4,16 @@
 
 using LinearAlgebra, Serialization, BenchmarkTools
 
-#include("../src/squirrel.jl")
+include("../src/squirrel.jl")
 include("../src/metric.jl")
 
-g  	= metric.g
-gk 	= metric.ge
+# Define parameter vectors
+p_iso = metric.EARTH_ISO_PARAMS
+p_ks = metric.EARTH_KS_PARAMS
+
+# Define metric functions with parameters
+g = (x,p=p_iso)->metric.g(x,p)
+gk = (x,p=p_ks)->metric.gks(x,p)
 
 Nsamp   = 1000
 
@@ -24,7 +29,7 @@ Nfs	= string(Nsamp)
 #	SAMPLES IN ANALOGUE GEOMETRY WITH ATMOSPHERIC & IONOSPHERIC EFFECTS
 #-----------------------------------------------------------------------
 
-tc	= squirrel.seval.gen(Nsamp,g,6)
+tc	= squirrel.seval.gen(Nsamp,g,p_iso,6)
 
 pfx	= "tct"
 
@@ -36,7 +41,7 @@ Serialization.serialize(tctloc,squirrel.seval.tc2tup(tc))
 #	SAMPLES IN KERR GEOMETRY
 #-----------------------------------------------------------------------
 
-tck 	= squirrel.seval.gen(Nsamp,gk,6)
+tck 	= squirrel.seval.gen(Nsamp,gk,p_ks,6)
 
 pfx	= "tck"
 

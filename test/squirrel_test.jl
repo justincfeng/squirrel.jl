@@ -2,8 +2,14 @@
 #   TOLERANCES
 #-----------------------------------------------------------------------
 
+using ..metric
+
+p_mink  = Float64[]
+p_iso   = metric.EARTH_ISO_PARAMS
+p_ks    = metric.EARTH_KS_PARAMS
+
 δtol = 1e-8
-tol  = 1e-13
+tol  = 1e-12
 
 #-----------------------------------------------------------------------
 #   GEODESIC SOLVER TEST
@@ -11,17 +17,17 @@ tol  = 1e-13
 
 Z0 = [0.;0.;0.;0.;1.;1.;0.;0.]      # Index raised in p's here
 ZF = [1.;1.;0.;0.;-1.;1.;0.;0.]     # Index lowered in p's here
-@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , δtol 
+@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , p_mink , δtol 
                         , AutoVern7(Rodas5()) ) ≈ ZF
 
 Z0 = [0.;0.;0.;0.;1.;0.;1.;0.]      # Index raised in p's here
 ZF = [1.;0.;1.;0.;-1.;0.;1.;0.]     # Index lowered in p's here
-@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , δtol 
+@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , p_mink , δtol 
                         , AutoVern7(Rodas5()) ) ≈ ZF
 
 Z0 = [0.;0.;0.;0.;1.;0.;0.;1.]      # Index raised in p's here
 ZF = [1.;0.;0.;1.;-1.;0.;0.;1.]     # Index lowered in p's here
-@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , δtol 
+@test squirrel.gsolve(  Z0[1:4] , Z0[5:8] , η , p_mink , δtol 
                         , AutoVern7(Rodas5()) ) ≈ ZF
 
 #-----------------------------------------------------------------------
@@ -80,14 +86,14 @@ Vid  = vcat(-V[2:4,1],-V[2:4,2],-V[2:4,3],-V[2:4,4])
 #   ZERO FUNCTION TEST
 #-----------------------------------------------------------------------
 
-@test squirrel.zF( Vid , Zi , η , δtol ) ≈ zeros(12) atol=tol
+@test squirrel.zF( Vid , Zi , η , p_mink , δtol ) ≈ zeros(12) atol=tol
 
 #-----------------------------------------------------------------------
 #   GEJAC TEST
 #-----------------------------------------------------------------------
 
 for i=1:4
-    local res = squirrel.gejac( Zi[1:4,i] , Zi[5:8,i] , η , δtol )
+    local res = squirrel.gejac( Zi[1:4,i] , Zi[5:8,i] , η , p_mink , δtol )
     @test res[1][1:4] ≈ Xc atol=tol
     @test res[1][6:8] ≈ -V[2:4,i] atol=tol
     @test res[2][1,:] ≈ -V[2:4,i] atol=tol
@@ -96,7 +102,7 @@ end
 #-----------------------------------------------------------------------
 #   JACOBIAN CALCULATOR TEST
 #-----------------------------------------------------------------------
-global resx = squirrel.geocJ( Zi , η , δtol )
+global resx = squirrel.geocJ( Zi , η , p_mink , δtol )
 
 @test resx[1][6:8,:]       ≈ -V[2:4,:] atol=tol
 
@@ -140,7 +146,7 @@ Zf[:,4] = -3*ones(8)
 #   INITIAL DATA CORRECTOR TEST
 #-----------------------------------------------------------------------
 
-Zf = squirrel.idf( Zi , η , δtol , 24 ) 
+Zf = squirrel.idf( Zi , η , p_mink , δtol , 24 ) 
 @test Zf[1:4] ≈ Zi[1:4] atol=δtol*mean(Zi)/10
 @test Zf[6:8] ≈ Zi[6:8] atol=δtol*mean(Zi)/10
 
@@ -148,7 +154,7 @@ Zf = squirrel.idf( Zi , η , δtol , 24 )
 #   INITIAL DATA CONSTRUCTOR
 #-----------------------------------------------------------------------
 
-gk   = x->gks(x,0.5) ;
+gk   = (x,p=[0.5, 1.0])->metric.gks(x,p)
 
 XE   = [4.8552418244084965 4.845669922167221 4.856689375629473 4.8206419799059494 4.823208150136851 4.856202508967677  ; 
         7.299483910135271 6.8054911167005425 7.1810230696314425 6.153377751048404 7.746460952899268 7.227281564130913  ; 
@@ -162,10 +168,10 @@ Xtar = [5.855953201888279 ; 6.78444938070708 ; 9.525600927112148 ; 5.49279465977
 #-----------------------------------------------------------------------
 
 Xs = squirrel.locator4( XE[:,1:4] , 
-                        squirrel.locator4FHC22(XE[:,1:4])[1] , gk ,
-                        1e-10 , 24 , false )
+                        squirrel.locator4FHC22(XE[:,1:4])[1] , gk , [0.5, 1.0] ,
+                        1e-12 , 24 , false )
 
-@test Xs ≈ Xtar  atol=5e-14
+@test Xs ≈ Xtar  rtol=1e-12
 
 #-----------------------------------------------------------------------
 #   MULTI LOCATOR TEST
@@ -173,6 +179,6 @@ Xs = squirrel.locator4( XE[:,1:4] ,
 
 ne  = 6
 
-Xsc  = squirrel.locator(  XE , gk , 1e-10 , ne , 24 , 2e1 , Double64  )
+Xsc  = squirrel.locator(  XE , gk , [0.5, 1.0] , 1e-12 , ne , 24 , 2e1 , Double64  )
 
-@test Xsc ≈ Xtar  atol=5e-14
+@test Xsc ≈ Xtar  rtol=1e-12

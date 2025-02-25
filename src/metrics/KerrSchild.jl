@@ -8,12 +8,12 @@
 
 #-----------------------------------------------------------------------
 """
-    rsq( X::RealVec , p::RealVec )
+    rsq( X::RealVec , p )
 The `rsq` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the value of ``r^2`` at that point in a
 Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
 """
-function rsq( X::RealVec , p::RealVec )
+function rsq( X::RealVec , p )
     tpfl=typeof(X[1])
     x = X[2]
     y = X[3]
@@ -26,13 +26,13 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    fks( X::RealVec , p::RealVec )
+    fks( X::RealVec , p )
 The `fks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the value of function ``f`` at that point in 
 a Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
 and p[2] is GM (product of gravitational constant and mass)
 """
-function fks( X::RealVec , p::RealVec )
+function fks( X::RealVec , p )
     tpfl=typeof(X[1])
     x = X[2]
     y = X[3]
@@ -47,12 +47,12 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    kks( X::RealVec , p::RealVec )
+    kks( X::RealVec , p )
 The `kks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the tensor product ``k_\\mu k_\\nu`` at that 
 point in a Kerr spacetime with parameters `p` where p[1] is the rotation parameter a
 """
-function kks( X::RealVec , p::RealVec )
+function kks( X::RealVec , p )
     tpfl=typeof(X[1])
     k = zeros(tpfl,4)
     kk = zeros(tpfl,4,4)
@@ -83,15 +83,15 @@ end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    gks( X::RealVec , p::RealVec )
+    gks( X::RealVec , p=[tpfl(738), tpfl(1)] , tpfl::DataType=Float64 )
 The `gks` function takes a point `X` in Cartesian Kerr-Schild 
 coordinates and calculates the components of the Kerr-Schild metric at 
 that point in a Kerr spacetime with parameters `p` where:
 - p[1] is the rotation parameter a
 - p[2] is GM (product of gravitational constant and mass)
 """
-function gks( X::RealVec , p::RealVec )
-    tpfl=typeof(X[1])
+function gks( X::RealVec , p=[tpfl(738), tpfl(1)] , 
+              tpfl::DataType=Float64 )
     return ημν(tpfl) + fks(X,p)*kks(X,p)
 end     #---------------------------------------------------------------
 
@@ -107,7 +107,7 @@ that point in a Kerr spacetime with default Earth parameters:
 function ge( X::RealVec )
     tpfl=typeof(X[1])
     p = [tpfl(738), tpfl(1)]  # [a, GM]
-    return gks(X,p)
+    return gks(X,p,tpfl)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------

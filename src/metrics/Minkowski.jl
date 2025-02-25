@@ -2,6 +2,8 @@
 #       BEGIN   Minkowski.jl
 #-----------------------------------------------------------------------
 
+export ηdot, mnorm, ημν, δμν
+
 #-----------------------------------------------------------------------
 #   THE MINKOWSKI PRODUCT (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
@@ -62,7 +64,7 @@ end     #---------------------------------------------------------------
 #   THE MINKOWSKI METRIC (RECTANGULAR COORDINATES)
 #-----------------------------------------------------------------------
 """
-    ημν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
+    ημν( tpfl::DataType=Float64 , p=Float64[] , dim::Int=4 )
 
 The function `ημν` constructs the components of the Minkowski metric.
 The first argument `tpfl` specifies the floating point datatype
@@ -76,7 +78,7 @@ are `tpfl=Float64`, `dim=4`, and `p=nothing`:
         true
 
 """
-function ημν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
+function ημν( tpfl::DataType=Float64 , p=Float64[] , dim::Int=4 )
     gη = one(tpfl)*(I(dim))
     gη[1,1] = -gη[1,1]
     return Matrix(gη)
@@ -86,14 +88,14 @@ end     #---------------------------------------------------------------
 #   KRONECKER DELTA 
 #-----------------------------------------------------------------------
 """
-    δμν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
+    δμν( tpfl::DataType=Float64 , p=Float64[] , dim::Int=4 )
 
 The function `δμν` returns the components of an identity matrix of 
 dimension `dim` using the floating-point datatype `tpfl`. The parameter
 vector `p` is included for API consistency but not used since the identity
 matrix is parameter-free.
 """
-function δμν( tpfl::DataType=Float64 , dim::Int=4 , p::Union{Nothing,RealVec}=nothing )
+function δμν( tpfl::DataType=Float64 , p=Float64[] , dim::Int=4)
     return one(tpfl)*(I(dim))
 end     #---------------------------------------------------------------
 

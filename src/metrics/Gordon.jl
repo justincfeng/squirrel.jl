@@ -46,7 +46,7 @@ end     #---------------------------------------------------------------
 #   THE GORDON METRIC
 #-----------------------------------------------------------------------
 """
-    gGordon( X::RealVec , p::RealVec , n::Function=nIR , gfunc::Function=giso , 
+    gGordon( X::RealVec , p::RealVec , n::Function=nIR , gfunc::Function=metric.giso , 
              U::RealVec=Float64[-1;0;0;0] )
 
 The function `gGordon` computes the Gordon metric. The arguments are:
@@ -56,32 +56,27 @@ The function `gGordon` computes the Gordon metric. The arguments are:
 - gfunc: background metric function (can be replaced with user-supplied function)
 - U: fluid four-velocity function (can be replaced with user-supplied vector)
 """
-function gGordon( X::RealVec , p::RealVec , n::Function=nIR ,
-                  gfunc::Function=giso , U::RealVec=Float64[-1;0;0;0] )
+function gGordon( X::RealVec , p , n::Function=nIR ,
+                  gfunc::Function=metric.giso , U::RealVec=Float64[-1;0;0;0] )
 
     tpfl=typeof(X[1])
-
-    gs = gfunc( X, p )
-
+    gs = gfunc( X , p , tpfl )
     Unsq = abs(transpose(U)*gs*U)
-
     UU = uugen( U , X )
-
     return gs + ( 1-1/(n(X)^2) )*UU/Unsq
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
 """
-    ge_gordon( X::RealVec )
+    ge_gordon( X::RealVec , p=[tpfl(1), tpfl(1.0826300e-3), tpfl(1.438127773656399e9)] , tpfl::DataType=Float64 )
 The `ge_gordon` function computes the Gordon metric with default Earth parameters:
 - GM = 1 (product of gravitational constant and mass)
 - J2 = 1.0826300e-3 (quadrupole moment)
 - a = 1.438127773656399e9 (equatorial radius)
 """
-function ge_gordon( X::RealVec )
-    tpfl=typeof(X[1])
-    p = [tpfl(1), tpfl(1.0826300e-3), tpfl(1.438127773656399e9)]  # [GM, J2, a]
-    return gGordon(X, p)
+function ge_gordon( X::RealVec , p=[tpfl(1), tpfl(1.0826300e-3), 
+                    tpfl(1.438127773656399e9)] , tpfl::DataType=Float64 )
+    return gGordon(X, p , tpfl)
 end     #---------------------------------------------------------------
 
 #-----------------------------------------------------------------------
